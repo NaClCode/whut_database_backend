@@ -16,7 +16,7 @@ async def _(body:CoursePlanDetailSchema, token_payload: dict = Depends(validate_
     id = body.id
 
     try:
-        plan:ClassPlan = ClassPlanCrud.get_by_id(db, id)
+        plan = ClassPlanCrud.get_by_id(db, ClassPlan, id)
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(status_code=500, content={"status": 1, "message": f"Database Error: {e}"})

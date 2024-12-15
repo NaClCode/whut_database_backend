@@ -5,9 +5,10 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from schema.course.schedule.CourseScheduleDetailSchema import CourseScheduleDetailSchema
 from crud.ClassScheduleCrud import ClassScheduleCrud
+from model.ClassScheduleModel import ClassSchedule
 from utils.auth_token import validate_token
 from utils.get_db import get_db
-from model.ClassScheduleModel import ClassSchedule
+
 detail_router = APIRouter()
 
 @detail_router.get("/detail")
@@ -16,7 +17,7 @@ async def _(body:CourseScheduleDetailSchema, token_payload: dict = Depends(valid
     id = body.id
 
     try:
-        schedule:ClassSchedule = ClassScheduleCrud.get_by_id(db, id)
+        schedule = ClassScheduleCrud.get_by_id(db, ClassSchedule, id)
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(status_code=500, content={"status": 1, "message": f"Database Error: {e}"})

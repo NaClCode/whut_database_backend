@@ -7,7 +7,7 @@ from schema.teacher.TeacherGetInfoSchema import TeacherGetInfoSchema
 from crud.TeacherCrud import TeacherCrud
 from utils.auth_token import validate_token
 from utils.get_db import get_db
-
+from model.TeacherModel import Teacher
 list_info_router = APIRouter()
 
 @list_info_router.get("/listInfo")
@@ -15,7 +15,7 @@ async def _(body: TeacherGetInfoSchema, token_payload: dict = Depends(validate_t
 
     teacher_id = body.id
     try:
-        user = TeacherCrud.get_by_id(db, teacher_id)
+        user = TeacherCrud.get_by_id(db, Teacher, teacher_id)
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(status_code=500, content={"status": 1, "message": f"Database Error: {e}"})

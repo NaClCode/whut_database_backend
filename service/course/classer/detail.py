@@ -16,7 +16,7 @@ async def _(body:CourseClasserDetailSchema, token_payload: dict = Depends(valida
     id = body.id
 
     try:
-        classer:Class = ClassCrud.get_by_id(db, id)
+        classer = ClassCrud.get_by_id(db, Class, id)
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(status_code=500, content={"status": 1, "message": f"Database Error: {e}"})

@@ -10,6 +10,7 @@ from schema.student.StudentUpdateInfoSchema import StudentUpdateInfoSchema
 from utils.auth_token import validate_token
 from utils.get_db import get_db
 from utils.hash_string import hash_string
+from model.StudentModel import Student
 
 update_info_router = APIRouter()
 
@@ -37,7 +38,7 @@ async def _(body: StudentUpdateInfoSchema, token_payload: dict = Depends(validat
         return JSONResponse(status_code=400, content={"status": 1, "message": "IDcard length invalid"})
 
     try:
-        user = StudentCrud.get_by_id(db, user_id)
+        user = StudentCrud.get_by_id(db, Student, user_id)
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(status_code=500, content={"status": 1, "message": f"Database Error: {e}"})
@@ -54,7 +55,7 @@ async def _(body: StudentUpdateInfoSchema, token_payload: dict = Depends(validat
         if idcard != "": user.idcard = idcard
         if college != "": user.college = college
         
-        StudentCrud.update(db, user)
+        StudentCrud.update(db, Student, user)
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(status_code=500, content={"status": 1, "message": f"Database Error: {e}"})

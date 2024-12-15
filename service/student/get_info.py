@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from crud.StudentCrud import StudentCrud
 from utils.auth_token import validate_token
 from utils.get_db import get_db
+from model.StudentModel import Student
 
 get_info_router = APIRouter()
 
@@ -15,7 +16,7 @@ async def _(token_payload: dict = Depends(validate_token), db: Session = Depends
     user_id = token_payload.get("user_id")
 
     try:
-        user = StudentCrud.get_by_id(db, user_id)
+        user = StudentCrud.get_by_id(db, Student, user_id)
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(status_code=500, content={"status": 1, "message": f"Database Error: {e}"})

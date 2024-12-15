@@ -10,6 +10,7 @@ from schema.teacher.TeacherUpdateInfoSchema import TeacherUpdateInfoSchema
 from utils.auth_token import validate_token
 from utils.get_db import get_db
 from utils.hash_string import hash_string
+from model.TeacherModel import Teacher
 
 update_info_router = APIRouter()
 
@@ -37,7 +38,7 @@ async def _(body: TeacherUpdateInfoSchema, token_payload: dict = Depends(validat
         return JSONResponse(status_code=400, content={"status": 1, "message": "IDcard length invalid"})
 
     try:
-        user = TeacherCrud.get_by_id(db, user_id)
+        user = TeacherCrud.get_by_id(db, Teacher, user_id)
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(status_code=500, content={"status": 1, "message": f"Database Error: {e}"})
