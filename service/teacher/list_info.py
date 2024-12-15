@@ -11,7 +11,7 @@ from model.TeacherModel import Teacher
 list_info_router = APIRouter()
 
 @list_info_router.get("/listInfo")
-async def _(body: TeacherGetInfoSchema, token_payload: dict = Depends(validate_token), db: Session = Depends(get_db)):
+async def _(body: TeacherGetInfoSchema = Depends(), token_payload: dict = Depends(validate_token), db: Session = Depends(get_db)):
 
     teacher_id = body.id
     try:

@@ -11,7 +11,7 @@ from utils.get_db import get_db
 search_router = APIRouter()
 
 @search_router.get("/search")
-async def _(body: CoursePlanSearchSchema, token_payload: dict = Depends(validate_token), db: Session = Depends(get_db)):
+async def _(body: CoursePlanSearchSchema = Depends(), token_payload: dict = Depends(validate_token), db: Session = Depends(get_db)):
     user_id = token_payload.get("user_id")
     profession = body.profession
     credit = body.credit

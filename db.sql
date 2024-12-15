@@ -81,3 +81,24 @@ CREATE TABLE student_course (
     FOREIGN KEY(student_id) REFERENCES student(id),
     FOREIGN KEY(class_id) REFERENCES class(id)
 );
+
+INSERT INTO teacher (name, idcard, password, sex, introduction, profession, college, email, verify) VALUES ('Teacher_1', 'IDCARDT0000001', 'pass1', 'M', 'Introduction for teacher 1', 'Profession_1', 'College_1', 'teacher1@school.edu', FALSE);
+INSERT INTO teacher (name, idcard, password, sex, introduction, profession, college, email, verify) VALUES ('Teacher_2', 'IDCARDT0000002', 'pass2', 'F', 'Introduction for teacher 2', 'Profession_2', 'College_0', 'teacher2@school.edu', FALSE);
+INSERT INTO teacher (name, idcard, password, sex, introduction, profession, college, email, verify) VALUES ('Teacher_3', 'IDCARDT0000003', 'pass3', 'M', 'Introduction for teacher 3', 'Profession_0', 'College_1', 'teacher3@school.edu', FALSE);
+INSERT INTO teacher (name, idcard, password, sex, introduction, profession, college, email, verify) VALUES ('Teacher_4', 'IDCARDT0000004', 'pass4', 'F', 'Introduction for teacher 4', 'Profession_1', 'College_0', 'teacher4@school.edu', FALSE);
+INSERT INTO teacher (name, idcard, password, sex, introduction, profession, college, email, verify) VALUES ('Teacher_5', 'IDCARDT0000005', 'pass5', 'U', 'Introduction for teacher 5', 'Profession_2', 'College_1', 'teacher5@school.edu', FALSE);
+INSERT INTO class_plan (name, introduction, profession, college, credit, type) VALUES ('Plan_1', 'Introduction_1', 'Profession_1', 'College_1', 3, 'B');
+INSERT INTO class_plan (name, introduction, profession, college, credit, type) VALUES ('Plan_2', 'Introduction_2', 'Profession_2', 'College_0', 4, 'X');
+INSERT INTO class_plan (name, introduction, profession, college, credit, type) VALUES ('Plan_3', 'Introduction_3', 'Profession_0', 'College_1', 2, 'G');
+INSERT INTO class_plan (name, introduction, profession, college, credit, type) VALUES ('Plan_4', 'Introduction_4', 'Profession_1', 'College_0', 5, 'S');
+INSERT INTO class_plan (name, introduction, profession, college, credit, type) VALUES ('Plan_5', 'Introduction_5', 'Profession_2', 'College_1', 3, 'B');
+INSERT INTO class (num, max_num, class_plan_id, teacher_id) VALUES (15, 30, 1, 1);
+INSERT INTO class (num, max_num, class_plan_id, teacher_id) VALUES (20, 30, 2, 2);
+INSERT INTO class (num, max_num, class_plan_id, teacher_id) VALUES (12, 30, 3, 3);
+INSERT INTO class (num, max_num, class_plan_id, teacher_id) VALUES (10, 30, 4, 4);
+INSERT INTO class (num, max_num, class_plan_id, teacher_id) VALUES (18, 30, 5, 5);
+INSERT INTO class_schedule (start_time, end_time, classtype, classroom, class_id) VALUES ('2024-06-16 08:00:00', '2024-06-16 10:00:00', 'C', 'Room_101', 1);
+INSERT INTO class_schedule (start_time, end_time, classtype, classroom, class_id) VALUES ('2024-06-17 09:00:00', '2024-06-17 11:00:00', 'S', 'Room_202', 2);
+INSERT INTO class_schedule (start_time, end_time, classtype, classroom, class_id) VALUES ('2024-06-18 10:00:00', '2024-06-18 12:00:00', 'C', 'Room_303', 3);
+INSERT INTO class_schedule (start_time, end_time, classtype, classroom, class_id) VALUES ('2024-06-19 11:00:00', '2024-06-19 13:00:00', 'S', 'Room_404', 4);
+INSERT INTO class_schedule (start_time, end_time, classtype, classroom, class_id) VALUES ('2024-06-20 12:00:00', '2024-06-20 14:00:00', 'C', 'Room_505', 5);

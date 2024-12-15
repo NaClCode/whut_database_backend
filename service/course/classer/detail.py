@@ -11,7 +11,7 @@ from model.ClassModel import Class
 detail_router = APIRouter()
 
 @detail_router.get("/detail")
-async def _(body:CourseClasserDetailSchema, token_payload: dict = Depends(validate_token), db: Session = Depends(get_db)):
+async def _(body:CourseClasserDetailSchema = Depends(), token_payload: dict = Depends(validate_token), db: Session = Depends(get_db)):
     user_id = token_payload.get("user_id")
     id = body.id
 

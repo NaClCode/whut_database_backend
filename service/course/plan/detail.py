@@ -11,7 +11,7 @@ from model.ClassPlanModel import ClassPlan
 detail_router = APIRouter()
 
 @detail_router.get("/detail")
-async def _(body:CoursePlanDetailSchema, token_payload: dict = Depends(validate_token), db: Session = Depends(get_db)):
+async def _(body:CoursePlanDetailSchema = Depends(), token_payload: dict = Depends(validate_token), db: Session = Depends(get_db)):
     user_id = token_payload.get("user_id")
     id = body.id
 
@@ -34,6 +34,7 @@ async def _(body:CoursePlanDetailSchema, token_payload: dict = Depends(validate_
             "profession": plan.profession,
             "college": plan.college,
             "credit": plan.credit,
+            
             "type": plan.type
         }
     }

@@ -12,7 +12,7 @@ from utils.get_db import get_db
 list_router = APIRouter()
 
 @list_router.get("/list")
-async def _(body:CourseScheduleListSchema, token_payload: dict = Depends(validate_token), db: Session = Depends(get_db)):
+async def _(body:CourseScheduleListSchema = Depends(), token_payload: dict = Depends(validate_token), db: Session = Depends(get_db)):
     user_id = token_payload.get("user_id")
     id = body.id
     page = body.page

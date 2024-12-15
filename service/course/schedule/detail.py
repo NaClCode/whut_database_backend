@@ -12,7 +12,7 @@ from utils.get_db import get_db
 detail_router = APIRouter()
 
 @detail_router.get("/detail")
-async def _(body:CourseScheduleDetailSchema, token_payload: dict = Depends(validate_token), db: Session = Depends(get_db)):
+async def _(body:CourseScheduleDetailSchema = Depends(), token_payload: dict = Depends(validate_token), db: Session = Depends(get_db)):
     user_id = token_payload.get("user_id")
     id = body.id
 

@@ -15,7 +15,7 @@ from service.course import course_router
 
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title='DATABASE')
+app = FastAPI(title='DATABASE', debug=True)
 
 app.add_middleware(
     CORSMiddleware,

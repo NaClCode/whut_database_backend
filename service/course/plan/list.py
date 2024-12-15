@@ -11,7 +11,7 @@ from utils.get_db import get_db
 list_plan_router = APIRouter()
 
 @list_plan_router.get("/list")
-async def _(body: CoursePlanListSchema, token_payload: dict = Depends(validate_token), db: Session = Depends(get_db)):
+async def _(body: CoursePlanListSchema = Depends(), token_payload: dict = Depends(validate_token), db: Session = Depends(get_db)):
     user_id = token_payload.get("user_id")
     page = body.page
     page_size = body.pagesize
