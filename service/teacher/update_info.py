@@ -25,7 +25,7 @@ async def _(body: TeacherUpdateInfoSchema, token_payload: dict = Depends(validat
     college = body.college
     idcard = body.idcard
 
-    if not (config.user_name_min <= len(username) <= config.user_name_max):
+    if username != "" and not (config.user_name_min <= len(username) <= config.user_name_max):
         return JSONResponse(status_code=400, content={"status": 1, "message": "Username length invalid"})
 
     if password != "" and not (config.user_password_min <= len(password) <= config.user_password_max):
