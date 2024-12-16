@@ -20,7 +20,7 @@ async def _(body: CoursePlanSearchSchema = Depends(), token_payload: dict = Depe
     page_size = body.pagesize
 
     try:
-        data = ClassPlanCrud.get_by_filters(db, page, page_size, credit, profession, college)
+        data = ClassPlanCrud.get_by_filters(db, user_id, page, page_size, credit, profession, college)
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(status_code=500, content={"status": 1, "message": f"Database Error: {e}"})

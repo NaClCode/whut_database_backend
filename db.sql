@@ -102,3 +102,5 @@ INSERT INTO class_schedule (start_time, end_time, classtype, classroom, class_id
 INSERT INTO class_schedule (start_time, end_time, classtype, classroom, class_id) VALUES ('2024-06-18 10:00:00', '2024-06-18 12:00:00', 'C', 'Room_303', 3);
 INSERT INTO class_schedule (start_time, end_time, classtype, classroom, class_id) VALUES ('2024-06-19 11:00:00', '2024-06-19 13:00:00', 'S', 'Room_404', 4);
 INSERT INTO class_schedule (start_time, end_time, classtype, classroom, class_id) VALUES ('2024-06-20 12:00:00', '2024-06-20 14:00:00', 'C', 'Room_505', 5);
+
+INSERT INTO student_course (student_id, class_id, grade, enrolled_date) VALUES (1, 1, 65, '2024-06-20 14:00:00');

@@ -1,5 +1,9 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import func
+from sqlalchemy import case
 from model.ClassPlanModel import ClassPlan
+from model.SCModel import StudentCourse
+from model.ClassModel import Class
 from .Crud import AbstractCrud
 
 class ClassPlanCrud(AbstractCrud[ClassPlan]):
@@ -22,11 +26,17 @@ class ClassPlanCrud(AbstractCrud[ClassPlan]):
         return new_plan
     
     @staticmethod
-    def get_by_id_paginated(db: Session, page: int, page_size: int = 10):
+    def get_by_id_paginated(
+        db: Session, 
+        student_id: int, 
+        page: int = 1, 
+        page_size: int = 10
+    ):
         """
-        分页查询按 class_plan_id 筛选的记录
+        分页查询 class_plan，并判断指定学生是否选择了该课程。
         """
         offset = (page - 1) * page_size
+        
         total_records = db.query(ClassPlan).count()
         total_pages = (total_records + page_size - 1) // page_size
 
@@ -38,35 +48,52 @@ class ClassPlanCrud(AbstractCrud[ClassPlan]):
                 "total_pages": total_pages,
                 "data": []
             }
-
+        
         data = (
-            db.query(ClassPlan)
+            db.query(
+                ClassPlan.id,
+                ClassPlan.name,
+                ClassPlan.introduction,
+                ClassPlan.profession,
+                ClassPlan.college,
+                ClassPlan.credit,
+                ClassPlan.type,
+                func.max(case(
+                    (StudentCourse.student_id.isnot(None), 1),
+                    else_=0
+                )).label('is_selected')
+            )
+            .outerjoin(Class, ClassPlan.id == Class.class_plan_id)
+            .outerjoin(StudentCourse, 
+                       (StudentCourse.class_id == Class.id) & 
+                       (StudentCourse.student_id == student_id))
+            .group_by(ClassPlan.id) 
             .offset(offset)
             .limit(page_size)
             .all()
         )
-
-        if data is None:
-            return None
 
         return {
             "page": page,
             "page_size": page_size,
             "total_records": total_records,
             "total_pages": total_pages,
-            "data": [{"id": i.id,
-                      "name": i.name,
-                      "introduction": i.introduction,
-                      "profession": i.profession, 
-                      "type": i.type,
-                      "college": i.college,
-                      "credit": i.credit
-                      } for i in data]
+            "data": [{
+                "id": i.id,
+                "name": i.name,
+                "introduction": i.introduction,
+                "profession": i.profession, 
+                "college": i.college,
+                "credit": i.credit,
+                "type": i.type,
+                "is_selected": i.is_selected  # 是否已选择
+            } for i in data]
         }
-    
+
     @staticmethod
     def get_by_filters(
         db: Session, 
+        student_id: int, 
         page: int = 1, 
         page_size: int = 10, 
         credit: int = None, 
@@ -75,19 +102,40 @@ class ClassPlanCrud(AbstractCrud[ClassPlan]):
     ):
         """
         根据 credit, profession, college 查询记录，并支持分页。
+        同时判断指定学生是否选择了该课程计划。
         如果某个参数为 None，则忽略该参数的过滤条件。
         """
-        query = db.query(ClassPlan)
+        query = db.query(
+            ClassPlan.id,
+            ClassPlan.name,
+            ClassPlan.introduction,
+            ClassPlan.profession,
+            ClassPlan.college,
+            ClassPlan.credit,
+            ClassPlan.type,
+            func.max(case(
+                (StudentCourse.student_id.isnot(None), 1),
+                else_=0
+            )).label('is_selected')
+        ).outerjoin(
+            Class, ClassPlan.id == Class.class_plan_id
+        ).outerjoin(
+            StudentCourse,
+            (StudentCourse.class_id == Class.id) & (StudentCourse.student_id == student_id)
+        )
 
-        if credit != -1:
+        # 应用过滤条件
+        if credit is not None and credit != -1:
             query = query.filter(ClassPlan.credit == credit)
-        if profession != "":
+        if profession:
             query = query.filter(ClassPlan.profession == profession)
-        if college != "":
+        if college:
             query = query.filter(ClassPlan.college == college)
 
+        # 计算总记录数
         total_records = query.count()
 
+        # 分页
         offset = (page - 1) * page_size
         total_pages = (total_records + page_size - 1) // page_size
 
@@ -100,21 +148,27 @@ class ClassPlanCrud(AbstractCrud[ClassPlan]):
                 "data": []
             }
 
-        data = query.offset(offset).limit(page_size).all()
+        # 查询结果
+        data = query.group_by(ClassPlan.id).offset(offset).limit(page_size).all()
 
         return {
             "page": page,
             "page_size": page_size,
             "total_records": total_records,
             "total_pages": total_pages,
-            "data": [{"id": i.id,
-                      "name": i.name,
-                      "introduction": i.introduction,
-                      "profession": i.profession, 
-                      "type": i.type,
-                      "college": i.college,
-                      "credit": i.credit
-                      } for i in data]
+            "data": [
+                {
+                    "id": i.id,
+                    "name": i.name,
+                    "introduction": i.introduction,
+                    "profession": i.profession, 
+                    "college": i.college,
+                    "credit": i.credit,
+                    "type": i.type,
+                    "is_selected": i.is_selected
+                } 
+                for i in data
+            ]
         }
 
    
