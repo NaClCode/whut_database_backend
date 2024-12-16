@@ -86,7 +86,7 @@ class ClassPlanCrud(AbstractCrud[ClassPlan]):
                 "college": i.college,
                 "credit": i.credit,
                 "type": i.type,
-                "is_selected": i.is_selected  # 是否已选择
+                "is_selected": i.is_selected
             } for i in data]
         }
 
@@ -96,46 +96,63 @@ class ClassPlanCrud(AbstractCrud[ClassPlan]):
         student_id: int, 
         page: int = 1, 
         page_size: int = 10, 
+        name: str = None,
         credit: int = None, 
         profession: str = None, 
-        college: str = None
+        type: str = None,
+        college: str = None,
+        is_selected: bool = None
     ):
         """
         根据 credit, profession, college 查询记录，并支持分页。
         同时判断指定学生是否选择了该课程计划。
-        如果某个参数为 None，则忽略该参数的过滤条件。
+        如果某个参数为""或者-1，则忽略该参数的过滤条件。
         """
-        query = db.query(
-            ClassPlan.id,
-            ClassPlan.name,
-            ClassPlan.introduction,
-            ClassPlan.profession,
-            ClassPlan.college,
-            ClassPlan.credit,
-            ClassPlan.type,
-            func.max(case(
-                (StudentCourse.student_id.isnot(None), 1),
-                else_=0
-            )).label('is_selected')
-        ).outerjoin(
-            Class, ClassPlan.id == Class.class_plan_id
-        ).outerjoin(
-            StudentCourse,
-            (StudentCourse.class_id == Class.id) & (StudentCourse.student_id == student_id)
+        query = (
+            db.query(
+                ClassPlan.id,
+                ClassPlan.name,
+                ClassPlan.introduction,
+                ClassPlan.profession,
+                ClassPlan.college,
+                ClassPlan.credit,
+                ClassPlan.type,
+                func.max(case(
+                    (StudentCourse.student_id.isnot(None), 1),
+                    else_=0
+                )).label('is_selected')
+            )
+            .outerjoin(Class, ClassPlan.id == Class.class_plan_id)
+            .outerjoin(StudentCourse, 
+                    (StudentCourse.class_id == Class.id) & (StudentCourse.student_id == student_id))
+            .group_by(
+                ClassPlan.id, 
+                ClassPlan.name, 
+                ClassPlan.introduction, 
+                ClassPlan.profession,
+                ClassPlan.college, 
+                ClassPlan.credit, 
+                ClassPlan.type
+            )
         )
 
-        # 应用过滤条件
-        if credit is not None and credit != -1:
+        if name != "":
+            query = query.filter(ClassPlan.name == name)
+        if credit != -1:
             query = query.filter(ClassPlan.credit == credit)
-        if profession:
+        if profession != "":
             query = query.filter(ClassPlan.profession == profession)
-        if college:
+        if college != "":
             query = query.filter(ClassPlan.college == college)
+        if type != "":
+            query = query.filter(ClassPlan.type == type)
+        if is_selected != -1:
+            query = query.having(func.max(case(
+                (StudentCourse.student_id.isnot(None), 1), else_=0
+            )) == int(is_selected))
 
-        # 计算总记录数
         total_records = query.count()
 
-        # 分页
         offset = (page - 1) * page_size
         total_pages = (total_records + page_size - 1) // page_size
 
@@ -170,5 +187,6 @@ class ClassPlanCrud(AbstractCrud[ClassPlan]):
                 for i in data
             ]
         }
+
 
    
