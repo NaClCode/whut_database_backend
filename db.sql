@@ -104,3 +104,7 @@ INSERT INTO class_schedule (start_time, end_time, classtype, classroom, class_id
 INSERT INTO class_schedule (start_time, end_time, classtype, classroom, class_id) VALUES ('2024-06-20 12:00:00', '2024-06-20 14:00:00', 'C', 'Room_505', 5);
 
 INSERT INTO student_course (student_id, class_id, grade, enrolled_date) VALUES (1, 1, 65, '2024-06-20 14:00:00');
+INSERT INTO class (num, max_num, class_plan_id, teacher_id) VALUES (30, 30, 1, 2);
+INSERT INTO class (num, max_num, class_plan_id, teacher_id) VALUES (15, 30, 1, 3);
+INSERT INTO class (num, max_num, class_plan_id, teacher_id) VALUES (16, 30, 1, 5);
+INSERT INTO class (num, max_num, class_plan_id, teacher_id) VALUES (20, 30, 1, 2);

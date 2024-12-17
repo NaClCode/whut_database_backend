@@ -34,7 +34,6 @@ async def _(body:CoursePlanDetailSchema = Depends(), token_payload: dict = Depen
             "profession": plan.profession,
             "college": plan.college,
             "credit": plan.credit,
-            
             "type": plan.type
         }
     }

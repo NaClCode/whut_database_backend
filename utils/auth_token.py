@@ -25,5 +25,5 @@ def extract_payload(token: str) -> dict:
 def validate_token(authorization=Header(None)) -> dict:
     try:
         return extract_payload(authorization)
-    except (jwt.PyJWTError, jwt.ExpiredSignatureError, ValidationError):
-        raise HTTPException(status_code=401)
+    except (jwt.PyJWTError, jwt.ExpiredSignatureError, ValidationError, AttributeError):
+        raise HTTPException(status_code=401, detail='token无效, 请重新验证')
