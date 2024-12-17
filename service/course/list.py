@@ -14,9 +14,8 @@ list_router = APIRouter()
 async def _(token_payload: dict = Depends(validate_token), db: Session = Depends(get_db)):
     user_id = token_payload.get("user_id")
     
-
     try:
-        data:list[StudentCourse] = StudentCourseCrud.get_by_student_id(user_id)
+        data:list[StudentCourse] = StudentCourseCrud.get_by_student_id(db, user_id)
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(status_code=500, content={"status": 1, "message": f"Database Error: {e}"})

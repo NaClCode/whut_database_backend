@@ -21,7 +21,7 @@ async def enroll_course(body: CourseEnrollSchema, token_payload: dict = Depends(
         EnrollCrud.enroll_course(db, student_id=user_id, class_id=class_id, time=time)
     except Exception as e:
         traceback.print_exc()
-        return JSONResponse(status_code=500, content={"status": 1, "message": f"Error: {e}"})
+        return JSONResponse(status_code=500, content={"status": 1, "message": f"{e}"})
 
     return {
         "status": 0,

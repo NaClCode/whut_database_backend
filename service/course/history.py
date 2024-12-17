@@ -24,7 +24,6 @@ async def _(body: CourseHistorySchema = Depends(), token_payload: dict = Depends
         traceback.print_exc()
         return JSONResponse(status_code=500, content={"status": 1, "message": f"Database Error: {e}"})
 
-
     return {
         "status": 0,
         "message": "OK",
