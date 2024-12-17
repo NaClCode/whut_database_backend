@@ -4,8 +4,7 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from schema.course.CourseDropSchema import CourseDropSchema
-from crud.SCCrud import StudentCourseCrud
-from crud.EnrollmentHistoryCrud import EnrollmentHistoryCrud
+from crud.EnrollCrud import EnrollCrud
 
 from utils.auth_token import validate_token
 from utils.get_db import get_db
@@ -19,12 +18,10 @@ async def _(body:CourseDropSchema, token_payload: dict = Depends(validate_token)
     time = datetime.now()
 
     try:
-        StudentCourseCrud.delete_by_student_and_class(db, user_id, id)
-        EnrollmentHistoryCrud.create(db, user_id, id, 'Drop', time)
+        EnrollCrud.drop_course(db, student_id=user_id, class_id=id, time=time)
     except Exception as e:
         traceback.print_exc()
-        return JSONResponse(status_code=500, content={"status": 1, "message": f"Database Error: {e}"})
-
+        return JSONResponse(status_code=500, content={"status": 1, "message": f"Error: {e}"})
 
     return {
         "status": 0,
