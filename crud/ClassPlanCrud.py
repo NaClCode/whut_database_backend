@@ -49,6 +49,16 @@ class ClassPlanCrud(AbstractCrud[ClassPlan]):
                 "data": []
             }
         
+        subquery = (
+            db.query(StudentCourse.class_id)
+            .join(Class, StudentCourse.class_id == Class.id)
+            .filter(
+                Class.class_plan_id == ClassPlan.id,
+                StudentCourse.student_id == student_id
+            )
+            .exists()
+        )
+
         data = (
             db.query(
                 ClassPlan.id,
@@ -58,16 +68,8 @@ class ClassPlanCrud(AbstractCrud[ClassPlan]):
                 ClassPlan.college,
                 ClassPlan.credit,
                 ClassPlan.type,
-                func.max(case(
-                    (StudentCourse.student_id.isnot(None), 1),
-                    else_=0
-                )).label('is_selected')
+                case((subquery, 1), else_=0).label('is_selected')
             )
-            .outerjoin(Class, ClassPlan.id == Class.class_plan_id)
-            .outerjoin(StudentCourse, 
-                       (StudentCourse.class_id == Class.id) & 
-                       (StudentCourse.student_id == student_id))
-            .group_by(ClassPlan.id) 
             .offset(offset)
             .limit(page_size)
             .all()
@@ -104,58 +106,53 @@ class ClassPlanCrud(AbstractCrud[ClassPlan]):
         is_selected: bool = None
     ):
         """
-        根据 credit, profession, college 查询记录，并支持分页。
+        根据 credit, profession, college 等筛选条件查询记录，先过滤再分页查询。
         同时判断指定学生是否选择了该课程计划。
-        如果某个参数为""或者-1，则忽略该参数的过滤条件。
         """
-        query = (
-            db.query(
-                ClassPlan.id,
-                ClassPlan.name,
-                ClassPlan.introduction,
-                ClassPlan.profession,
-                ClassPlan.college,
-                ClassPlan.credit,
-                ClassPlan.type,
-                func.max(case(
-                    (StudentCourse.student_id.isnot(None), 1),
-                    else_=0
-                )).label('is_selected')
-            )
-            .outerjoin(Class, ClassPlan.id == Class.class_plan_id)
-            .outerjoin(StudentCourse, 
-                    (StudentCourse.class_id == Class.id) & (StudentCourse.student_id == student_id))
-            .group_by(
-                ClassPlan.id, 
-                ClassPlan.name, 
-                ClassPlan.introduction, 
-                ClassPlan.profession,
-                ClassPlan.college, 
-                ClassPlan.credit, 
-                ClassPlan.type
-            )
-        )
+
+        selected_subquery = (
+            db.query(ClassPlan.id)
+            .join(Class, ClassPlan.id == Class.class_plan_id)
+            .join(StudentCourse, 
+                (StudentCourse.class_id == Class.id) & (StudentCourse.student_id == student_id))
+            .distinct()
+        ).subquery()
+
+        query = db.query(ClassPlan.id,
+                        ClassPlan.name,
+                        ClassPlan.introduction,
+                        ClassPlan.profession,
+                        ClassPlan.college,
+                        ClassPlan.credit,
+                        ClassPlan.type,
+                        case(
+                            (ClassPlan.id.in_(selected_subquery), 1), else_=0
+                        ).label("is_selected"))
+
+        filters = []
 
         if name != "":
-            query = query.filter(ClassPlan.name == name)
-        if credit != -1:
-            query = query.filter(ClassPlan.credit == credit)
+            filters.append(ClassPlan.name == name)
+        if credit and credit != -1:
+            filters.append(ClassPlan.credit == credit)
         if profession != "":
-            query = query.filter(ClassPlan.profession == profession)
+            filters.append(ClassPlan.profession == profession)
         if college != "":
-            query = query.filter(ClassPlan.college == college)
+            filters.append(ClassPlan.college == college)
         if type != "":
-            query = query.filter(ClassPlan.type == type)
+            filters.append(ClassPlan.type == type)
         if is_selected != -1:
-            query = query.having(func.max(case(
-                (StudentCourse.student_id.isnot(None), 1), else_=0
-            )) == int(is_selected))
+            if is_selected:
+                filters.append(ClassPlan.id.in_(selected_subquery))  # 筛选选中的课程
+            else:
+                filters.append(~ClassPlan.id.in_(selected_subquery))  # 筛选未选中的课程
+
+        query = query.filter(*filters)
 
         total_records = query.count()
-
-        offset = (page - 1) * page_size
         total_pages = (total_records + page_size - 1) // page_size
 
+        offset = (page - 1) * page_size
         if page > total_pages:
             return {
                 "page": page,
@@ -165,8 +162,7 @@ class ClassPlanCrud(AbstractCrud[ClassPlan]):
                 "data": []
             }
 
-        # 查询结果
-        data = query.group_by(ClassPlan.id).offset(offset).limit(page_size).all()
+        data = query.offset(offset).limit(page_size).all()
 
         return {
             "page": page,
@@ -183,7 +179,7 @@ class ClassPlanCrud(AbstractCrud[ClassPlan]):
                     "credit": i.credit,
                     "type": i.type,
                     "is_selected": i.is_selected
-                } 
+                }
                 for i in data
             ]
         }

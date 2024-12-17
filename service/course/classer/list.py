@@ -19,7 +19,11 @@ async def _(body:CourseClasserListSchema = Depends(), token_payload: dict = Depe
     pagesize = body.pagesize
 
     try:
-        data = ClassCrud.get_by_id_paginated(db, id, page, pagesize)
+        data = ClassCrud.get_by_id_paginated(db, 
+                                             user_id=user_id, 
+                                             id=id, 
+                                             page=page, 
+                                             page_size=pagesize)
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(status_code=500, content={"status": 1, "message": f"Database Error: {e}"})
