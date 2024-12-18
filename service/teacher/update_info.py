@@ -14,7 +14,7 @@ from model.TeacherModel import Teacher
 
 update_info_router = APIRouter()
 
-@update_info_router.post("/updateInfo")
+@update_info_router.put("/updateInfo")
 async def _(body: TeacherUpdateInfoSchema, token_payload: dict = Depends(validate_token), db: Session = Depends(get_db)):
     user_id = token_payload.get("user_id")
     username = body.username
