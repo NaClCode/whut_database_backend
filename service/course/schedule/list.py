@@ -15,11 +15,9 @@ list_router = APIRouter()
 async def _(body:CourseScheduleListSchema = Depends(), token_payload: dict = Depends(validate_token), db: Session = Depends(get_db)):
     user_id = token_payload.get("user_id")
     id = body.id
-    page = body.page
-    pagesize = body.pagesize
 
     try:
-        data = ClassScheduleCrud.get_by_id_paginated(db, id, page, pagesize)
+        data = ClassScheduleCrud.get_by_id(db, id)
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(status_code=500, content={"status": 1, "message": f"Database Error: {e}"})

@@ -111,12 +111,14 @@ class ClassPlanCrud(AbstractCrud[ClassPlan]):
         """
 
         selected_subquery = (
-            db.query(ClassPlan.id)
+        db.query(ClassPlan.id)
             .join(Class, ClassPlan.id == Class.class_plan_id)
             .join(StudentCourse, 
                 (StudentCourse.class_id == Class.id) & (StudentCourse.student_id == student_id))
             .distinct()
         ).subquery()
+
+        selected_subquery_select = db.query(selected_subquery).subquery()
 
         query = db.query(ClassPlan.id,
                         ClassPlan.name,
@@ -126,7 +128,7 @@ class ClassPlanCrud(AbstractCrud[ClassPlan]):
                         ClassPlan.credit,
                         ClassPlan.type,
                         case(
-                            (ClassPlan.id.in_(selected_subquery), 1), else_=0
+                            (ClassPlan.id.in_(db.query(selected_subquery_select)), 1), else_=0
                         ).label("is_selected"))
 
         filters = []
@@ -143,9 +145,9 @@ class ClassPlanCrud(AbstractCrud[ClassPlan]):
             filters.append(ClassPlan.type == type)
         if is_selected != -1:
             if is_selected:
-                filters.append(ClassPlan.id.in_(selected_subquery))  # 筛选选中的课程
+                filters.append(ClassPlan.id.in_(selected_subquery))
             else:
-                filters.append(~ClassPlan.id.in_(selected_subquery))  # 筛选未选中的课程
+                filters.append(~ClassPlan.id.in_(selected_subquery))
 
         query = query.filter(*filters)
 

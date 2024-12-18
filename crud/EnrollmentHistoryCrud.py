@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
 from typing import List
 from model.EnrollmentHistoryModel import EnrollmentHistory
+from model.ClassModel import Class
+from model.ClassPlanModel import ClassPlan
 from .Crud import AbstractCrud
 
 class EnrollmentHistoryCrud(AbstractCrud[EnrollmentHistory]):
@@ -26,18 +28,29 @@ class EnrollmentHistoryCrud(AbstractCrud[EnrollmentHistory]):
         page: int = 1, 
         page_size: int = 10, 
         student_id: int = None, 
-        class_id:int = None, 
+        class_id: int = None, 
         action_type: str = None
     ):
         """
         根据 ID, 类型 查询记录，并支持分页。
-        如果某个参数为 None，则忽略该参数的过滤条件。
         """
-        query = db.query(EnrollmentHistory)
+        query = (
+            db.query(
+                EnrollmentHistory.id,
+                EnrollmentHistory.student_id,
+                EnrollmentHistory.class_id,
+                EnrollmentHistory.action_type,
+                EnrollmentHistory.action_date,
+                Class.id.label("class_id"),
+                ClassPlan.name.label("class_plan_name")
+            )
+            .join(Class, EnrollmentHistory.class_id == Class.id)
+            .join(ClassPlan, Class.class_plan_id == ClassPlan.id)
+        )
 
         if student_id != -1:
             query = query.filter(EnrollmentHistory.student_id == student_id)
-        if class_id != "":
+        if class_id != -1:
             query = query.filter(EnrollmentHistory.class_id == class_id)
         if action_type != "":
             query = query.filter(EnrollmentHistory.action_type == action_type)
@@ -63,12 +76,17 @@ class EnrollmentHistoryCrud(AbstractCrud[EnrollmentHistory]):
             "page_size": page_size,
             "total_records": total_records,
             "total_pages": total_pages,
-            "data": [{"id": i.id,
-                      "student_id": i.student_id,
-                      "class_id": i.class_id,
-                      "action_type": i.action_type,
-                      "action_date": i.action_date
-                      } for i in data]
+            "data": [
+                {
+                    "id": record.id,
+                    "student_id": record.student_id,
+                    "class_id": record.class_id,
+                    "action_type": record.action_type,
+                    "action_date": record.action_date,
+                    "class_plan_name": record.class_plan_name
+                }
+                for record in data
+            ]
         }
 
     @staticmethod
