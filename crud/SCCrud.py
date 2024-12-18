@@ -3,9 +3,10 @@ from sqlalchemy import extract
 from datetime import datetime
 from typing import List, Union
 from model.SCModel import StudentCourse
-from model.ClassModel import Class  # Assuming Class is your model for the 'class' table
-from model.TeacherModel import Teacher  # Assuming Teacher is your model for the 'teacher' table
-from model.ClassScheduleModel import ClassSchedule  # Assuming ClassSchedule is the model for the 'class_schedule' table
+from model.ClassModel import Class
+from model.TeacherModel import Teacher
+from model.ClassScheduleModel import ClassSchedule
+from model.ClassPlanModel import ClassPlan
 
 class StudentCourseCrud:
     @staticmethod
@@ -90,22 +91,29 @@ class StudentCourseCrud:
     @staticmethod
     def get_courses_by_month(db: Session, student_id: int, month: int, year: int) -> List[dict]:
         """
-        获取学生在某个月份的所有选课记录
+        获取学生在某个月份的所有选课记录，通过class_schedule中的start_time筛选，并从class_plan中获取课程名称
         """
-        records = db.query(StudentCourse).filter(
+        records = db.query(StudentCourse).join(Class).join(ClassSchedule).filter(
             StudentCourse.student_id == student_id,
-            extract('month', StudentCourse.enrolled_date) == month,
-            extract('year', StudentCourse.enrolled_date) == year
+            extract('month', ClassSchedule.start_time) == month,
+            extract('year', ClassSchedule.start_time) == year
         ).all()
 
         course_details = []
+
         for record in records:
             class_info = db.query(Class).filter(Class.id == record.class_id).first()
-            if class_info:
-                course_details.append({
-                    'name': class_info.name,
-                    'date': record.enrolled_date
-                })
+            schedule = db.query(ClassSchedule).filter(ClassSchedule.class_id == record.class_id).first()
+
+            if class_info and schedule:
+                class_plan = db.query(ClassPlan).filter(ClassPlan.id == class_info.class_plan_id).first()
+                
+                if class_plan:
+                    course_details.append({
+                        'name': class_plan.name,
+                        'date': schedule.start_time
+                    })
+        
         return course_details
     
     @staticmethod
@@ -113,25 +121,29 @@ class StudentCourseCrud:
         """
         获取学生在某一天的课程信息，包括课程名称、时间和上课地点
         """
-        records = db.query(StudentCourse).filter(
+        records = db.query(StudentCourse).join(Class).join(ClassSchedule).filter(
             StudentCourse.student_id == student_id,
-            extract('year', StudentCourse.enrolled_date) == specific_date.year,
-            extract('month', StudentCourse.enrolled_date) == specific_date.month,
-            extract('day', StudentCourse.enrolled_date) == specific_date.day
+            extract('year', ClassSchedule.start_time) == specific_date.year,
+            extract('month', ClassSchedule.start_time) == specific_date.month,
+            extract('day', ClassSchedule.start_time) == specific_date.day
         ).all()
 
         course_details = []
+
         for record in records:
             class_info = db.query(Class).filter(Class.id == record.class_id).first()
             if class_info:
+                class_plan = db.query(ClassPlan).filter(ClassPlan.id == class_info.class_plan_id).first()
                 schedule_info = db.query(ClassSchedule).filter(ClassSchedule.class_id == class_info.id).all()
-                for schedule in schedule_info:
-                    course_details.append({
-                        'name': class_info.name,
-                        'start_time': schedule.start_time,
-                        'end_time': schedule.end_time,
-                        'classroom': schedule.classroom
-                    })
+                if class_plan:
+                    for schedule in schedule_info:
+                        course_details.append({
+                            'name': class_plan.name,
+                            'start_time': schedule.start_time,
+                            'end_time': schedule.end_time,
+                            'classroom': schedule.classroom
+                        })
+
         return course_details
 
     @staticmethod
@@ -143,25 +155,43 @@ class StudentCourseCrud:
         支持分页
         """
         offset = (page - 1) * page_size
-        records = db.query(StudentCourse).filter(StudentCourse.student_id == student_id).offset(offset).limit(page_size).all()
+        
+
+        
+        query = db.query(
+            Class.id.label('id'),
+            ClassPlan.name,
+            ClassPlan.profession,
+            ClassPlan.college,
+            ClassPlan.type,
+            ClassPlan.credit,
+            Teacher.name.label('teacher'),
+            StudentCourse.grade
+        ).join(
+            StudentCourse, StudentCourse.class_id == Class.id
+        ).join(
+            ClassPlan, ClassPlan.id == Class.class_plan_id
+        ).outerjoin(
+            Teacher, Teacher.id == Class.teacher_id
+        ).filter(
+            StudentCourse.student_id == student_id
+        ).offset(offset).limit(page_size)
+        
+        records = query.all()
+        
         total_records = db.query(StudentCourse).filter(StudentCourse.student_id == student_id).count()
         total_pages = (total_records + page_size - 1) // page_size
         
-        course_details = []
-        for record in records:
-            class_info = db.query(Class).filter(Class.id == record.class_id).first()
-            teacher_info = db.query(Teacher).filter(Teacher.id == class_info.teacher_id).first() if class_info else None
-            if class_info:
-                course_details.append({
-                    'course_id': class_info.id,
-                    'course_name': class_info.name,
-                    'profession': class_info.profession,
-                    'college': class_info.college,
-                    'type': class_info.type,
-                    'credits': class_info.credit,
-                    'teacher': teacher_info.name if teacher_info else "Unknown",
-                    'grade': record.grade
-                })
+        course_details = [{
+            'course_id': record.id,
+            'course_name': record.name,
+            'profession': record.profession,
+            'college': record.college,
+            'type': record.type,
+            'credits': record.credit,
+            'teacher': record.teacher if record.teacher else "Unknown",
+            'grade': record.grade
+        } for record in records]
         
         return {
             "data": course_details,

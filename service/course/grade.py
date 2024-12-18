@@ -8,9 +8,9 @@ from utils.auth_token import validate_token
 from utils.get_db import get_db
 import traceback
 
-list_router = APIRouter()
+grade_router = APIRouter()
 
-@list_router.get("/grade")
+@grade_router.get("/grade")
 async def get_courses_for_month(body: CourseGradeSchema = Depends(), token_payload: dict = Depends(validate_token), db: Session = Depends(get_db)):
     user_id = token_payload.get("user_id")
     page = body.page
