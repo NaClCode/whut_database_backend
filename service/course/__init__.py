@@ -5,7 +5,7 @@ from .schedule import schedule_router
 from .drop import drop_router
 from .enroll import enroll_router
 from .history import history_router
-from .list import list_router
+from .table import list_router
 course_router = APIRouter()
 course_router.include_router(plan_router, prefix='/plan')
 course_router.include_router(classer_router, prefix='/classer')
