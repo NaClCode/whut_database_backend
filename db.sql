@@ -50,11 +50,11 @@ CREATE TABLE class_schedule (
     id INTEGER NOT NULL AUTO_INCREMENT, -- Course schedule ID, primary key, auto-increment
     start_time DATETIME NOT NULL,       -- Start time, not null
     end_time DATETIME NOT NULL,         -- End time, not null
-    classtype ENUM('C', 'S') NOT NULL,  -- Class type: C-Classroom, S-Lab, not null
-    classroom VARCHAR(100),             -- Classroom, nullable, max length 100 characters
+    classroom_id INTEGER NOT NULL,      -- Classroom
     class_id INTEGER NOT NULL,          -- Class ID, foreign key, not null
     PRIMARY KEY (id),                   -- Primary key on 'id'
-    FOREIGN KEY (class_id) REFERENCES class(id) -- Foreign key reference to 'class' table
+    FOREIGN KEY (class_id) REFERENCES class(id), -- Foreign key reference to 'class' table
+    FOREIGN KEY (classroom_id) REFERENCES classroom(id) -- -- Foreign key reference to 'classroom' table
 );
 CREATE TABLE enrollment_history (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -80,6 +80,31 @@ CREATE TABLE student_course (
     PRIMARY KEY(student_id, class_id),
     FOREIGN KEY(student_id) REFERENCES student(id),
     FOREIGN KEY(class_id) REFERENCES class(id)
+);
+
+CREATE TABLE classroom (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,  -- 教室ID，主键
+    name VARCHAR(100) NOT NULL,             -- 教室名称，例如 'Lab1', 'Room101'
+    capacity INTEGER NOT NULL,              -- 教室容纳人数
+    type ENUM('C', 'S') NOT NULL,            -- 教室类型，例如实验室、普通教室、研讨室等
+    location VARCHAR(255)                  -- 教室位置，例如 'Building A, Floor 2'
+);
+
+CREATE TABLE admin (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL,
+    password VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE system_status (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,         -- 唯一标识符
+    selection_start_time DATETIME NOT NULL,        -- 选课开始时间
+    selection_end_time DATETIME NOT NULL,          -- 选课结束时间
+    scheduling_start_time DATETIME NOT NULL,       -- 排课开始时间
+    scheduling_end_time DATETIME NOT NULL,         -- 排课结束时间
+    selection_status ENUM('Pending', 'Ongoing', 'Finished') NOT NULL DEFAULT 'Pending', -- 选课当前状态
+    scheduling_status ENUM('Pending', 'Ongoing', 'Finished') NOT NULL DEFAULT 'Pending', -- 排课当前状态
+    last_updated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP -- 上次更新时间
 );
 
 INSERT INTO teacher (name, idcard, password, sex, introduction, profession, college, email, verify) VALUES ('Teacher_1', 'IDCARDT0000001', 'pass1', 'M', 'Introduction for teacher 1', 'Profession_1', 'College_1', 'teacher1@school.edu', FALSE);
