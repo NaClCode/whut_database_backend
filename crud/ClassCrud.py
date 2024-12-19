@@ -36,7 +36,8 @@ class ClassCrud(AbstractCrud[Class]):
                         "start_time": schedule.start_time,
                         "end_time": schedule.end_time,
                         "classroom": schedule.classroom.name,
-                        "classtype": schedule.classroom.type
+                        "classtype": schedule.classroom.type,
+                        "location": schedule.classroom.location
                     }
                     for schedule in schedule_records
                 ]
@@ -64,25 +65,17 @@ class ClassCrud(AbstractCrud[Class]):
 
         data = (
             db.query(
-                Class.id,
-                Class.num,
-                Class.max_num,
-                Class.teacher_id,
-                Teacher.name.label("teacher_name"),
+                Class,
                 exists().where(
                     (StudentCourse.student_id == user_id) & 
                     (StudentCourse.class_id == Class.id)
                 ).label("is_enrolled")
             )
-            .join(Teacher, Class.teacher_id == Teacher.id)
             .filter(Class.class_plan_id == id)
             .offset(offset)
             .limit(page_size)
             .all()
         )
-
-        if not data:
-            return None
 
         result = {
             "page": page,
@@ -91,13 +84,13 @@ class ClassCrud(AbstractCrud[Class]):
             "total_pages": total_pages,
             "data": [
                 {
-                    "id": i.id,
-                    "num": i.num,
-                    "max_num": i.max_num,
-                    "teacher": i.teacher_name,
-                    "is_enrolled": i.is_enrolled
+                    "id": classer.id,
+                    "num": classer.num,
+                    "max_num": classer.max_num,
+                    "teacher": classer.teacher.name,
+                    "is_enrolled": is_enrolled
                 }
-                for i in data
+                for classer, is_enrolled in data
             ]
         }
 

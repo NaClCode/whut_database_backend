@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Enum
 from database import Base
-
+from sqlalchemy.orm import relationship
 class ClassPlan(Base):
     __tablename__ = "class_plan"
 

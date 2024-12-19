@@ -1,7 +1,5 @@
 from sqlalchemy import Column, Integer, DateTime, ForeignKey
-from sqlalchemy.orm import relationship, Mapped
-from model.ClassModel import Class
-from model.ClassroomModel import Classroom
+from sqlalchemy.orm import relationship
 from database import Base
 
 class ClassSchedule(Base):
@@ -13,9 +11,9 @@ class ClassSchedule(Base):
     classroom_id = Column(Integer, ForeignKey("classroom.id"), nullable=False)  # 教室ID，外键，非空
     class_id = Column(Integer, ForeignKey("class.id"), nullable=False)  # 班级ID，外键，非空
 
-    classroom:Mapped[Classroom] = relationship("Classroom", backref="schedules")
-    classer:Mapped[Classroom] = relationship("Class", backref="schedules")
-
+    classroom = relationship("Classroom", backref="ClassSchedule")
+    classer = relationship("Class", backref="ClassSchedule")
+    
     def __init__(self, start_time, end_time, classroom_id, class_id):
         self.start_time = start_time
         self.end_time = end_time

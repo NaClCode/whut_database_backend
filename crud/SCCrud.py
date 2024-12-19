@@ -91,29 +91,26 @@ class StudentCourseCrud:
     @staticmethod
     def get_courses_by_month(db: Session, student_id: int, month: int, year: int) -> List[dict]:
         """
-        获取学生在某个月份的所有选课记录，通过class_schedule中的start_time筛选，并从class_plan中获取课程名称
+        获取学生在某个月份的所有选课记录，通过class_schedule中的start_time筛选，
+        并从class_plan中获取课程名称以及该课程这个月的所有安排。
         """
-        records = db.query(StudentCourse).join(Class).join(ClassSchedule).filter(
+        records = db.query(ClassPlan.name, ClassSchedule.start_time).join(
+            Class, ClassPlan.id == Class.class_plan_id
+        ).join(
+            ClassSchedule, Class.id == ClassSchedule.class_id
+        ).join(
+            StudentCourse, StudentCourse.class_id == Class.id
+        ).filter(
             StudentCourse.student_id == student_id,
             extract('month', ClassSchedule.start_time) == month,
             extract('year', ClassSchedule.start_time) == year
         ).all()
 
-        course_details = []
+        course_details = [
+            {"name": name, "date": start_time}
+            for name, start_time in records
+        ]
 
-        for record in records:
-            class_info = db.query(Class).filter(Class.id == record.class_id).first()
-            schedule = db.query(ClassSchedule).filter(ClassSchedule.class_id == record.class_id).first()
-
-            if class_info and schedule:
-                class_plan = db.query(ClassPlan).filter(ClassPlan.id == class_info.class_plan_id).first()
-                
-                if class_plan:
-                    course_details.append({
-                        'name': class_plan.name,
-                        'date': schedule.start_time
-                    })
-        
         return course_details
     
     @staticmethod
@@ -121,30 +118,31 @@ class StudentCourseCrud:
         """
         获取学生在某一天的课程信息，包括课程名称、时间和上课地点
         """
-        records = db.query(StudentCourse).join(Class).join(ClassSchedule).filter(
+        from sqlalchemy.sql import func
+
+        course_details = db.query(
+            ClassPlan.name.label('course_name'),
+            ClassSchedule
+        ).select_from(StudentCourse).join(
+            Class, StudentCourse.class_id == Class.id
+        ).join(
+            ClassPlan, ClassPlan.id == Class.class_plan_id
+        ).join(
+            ClassSchedule, ClassSchedule.class_id == Class.id
+        ).filter(
             StudentCourse.student_id == student_id,
-            extract('year', ClassSchedule.start_time) == specific_date.year,
-            extract('month', ClassSchedule.start_time) == specific_date.month,
-            extract('day', ClassSchedule.start_time) == specific_date.day
+            func.date(ClassSchedule.start_time) == specific_date.date()
         ).all()
 
-        course_details = []
-
-        for record in records:
-            class_info = db.query(Class).filter(Class.id == record.class_id).first()
-            if class_info:
-                class_plan = db.query(ClassPlan).filter(ClassPlan.id == class_info.class_plan_id).first()
-                schedule_info = db.query(ClassSchedule).filter(ClassSchedule.class_id == class_info.id).all()
-                if class_plan:
-                    for schedule in schedule_info:
-                        course_details.append({
-                            'name': class_plan.name,
-                            'start_time': schedule.start_time,
-                            'end_time': schedule.end_time,
-                            'classroom': schedule.classroom
-                        })
-
-        return course_details
+        return [
+            {
+                'name': name,
+                'start_time': course.start_time,
+                'end_time': course.end_time,
+                'classroom': course.classroom
+            }
+            for name, course in course_details
+        ]
 
     @staticmethod
     def get_student_grade_page(
@@ -155,24 +153,14 @@ class StudentCourseCrud:
         支持分页
         """
         offset = (page - 1) * page_size
-        
-
-        
         query = db.query(
-            Class.id.label('id'),
-            ClassPlan.name,
-            ClassPlan.profession,
-            ClassPlan.college,
-            ClassPlan.type,
-            ClassPlan.credit,
-            Teacher.name.label('teacher'),
+            Class,
+            ClassPlan,
             StudentCourse.grade
         ).join(
             StudentCourse, StudentCourse.class_id == Class.id
         ).join(
             ClassPlan, ClassPlan.id == Class.class_plan_id
-        ).outerjoin(
-            Teacher, Teacher.id == Class.teacher_id
         ).filter(
             StudentCourse.student_id == student_id
         ).offset(offset).limit(page_size)
@@ -183,15 +171,15 @@ class StudentCourseCrud:
         total_pages = (total_records + page_size - 1) // page_size
         
         course_details = [{
-            'course_id': record.id,
-            'course_name': record.name,
-            'profession': record.profession,
-            'college': record.college,
-            'type': record.type,
-            'credits': record.credit,
-            'teacher': record.teacher if record.teacher else "Unknown",
-            'grade': record.grade
-        } for record in records]
+            'course_id': classer.id,
+            'course_name': class_plan.name,
+            'profession': class_plan.profession,
+            'college': class_plan.college,
+            'type': class_plan.type,
+            'credits': class_plan.credit,
+            'teacher': classer.teacher.name,
+            'grade': grade
+        } for classer, class_plan, grade in records]
         
         return {
             "data": course_details,

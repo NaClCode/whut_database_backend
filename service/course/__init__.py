@@ -1,7 +1,6 @@
 from fastapi import APIRouter
 from .plan import plan_router
 from .classer import classer_router
-from .schedule import schedule_router
 from .drop import drop_router
 from .enroll import enroll_router
 from .history import history_router
@@ -11,7 +10,6 @@ from .grade import grade_router
 course_router = APIRouter()
 course_router.include_router(plan_router, prefix='/plan')
 course_router.include_router(classer_router, prefix='/classer')
-course_router.include_router(schedule_router, prefix='/schedule')
 
 course_router.include_router(drop_router)
 course_router.include_router(enroll_router)

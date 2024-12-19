@@ -1,6 +1,6 @@
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import Column, Integer, ForeignKey
 from database import Base
-
+from sqlalchemy.orm import relationship
 class Class(Base):
     __tablename__ = "class"
 
@@ -9,6 +9,9 @@ class Class(Base):
     max_num = Column(Integer, nullable=False)  # 最大人数，非空
     class_plan_id = Column(Integer, ForeignKey("class_plan.id"), nullable=False)  # 课程计划ID，外键，非空
     teacher_id = Column(Integer, ForeignKey("teacher.id"), nullable=False)  # 教师ID，外键，非空
+
+    teacher = relationship("Teacher", backref="Class")
+    class_plan = relationship("ClassPlan", backref="Class")
 
     def __init__(self, num=0, max_num=30, class_plan_id=None, teacher_id=None):
         self.num = num

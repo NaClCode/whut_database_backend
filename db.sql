@@ -107,29 +107,68 @@ CREATE TABLE system_status (
     last_updated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP -- 上次更新时间
 );
 
-INSERT INTO teacher (name, idcard, password, sex, introduction, profession, college, email, verify) VALUES ('Teacher_1', 'IDCARDT0000001', 'pass1', 'M', 'Introduction for teacher 1', 'Profession_1', 'College_1', 'teacher1@school.edu', FALSE);
-INSERT INTO teacher (name, idcard, password, sex, introduction, profession, college, email, verify) VALUES ('Teacher_2', 'IDCARDT0000002', 'pass2', 'F', 'Introduction for teacher 2', 'Profession_2', 'College_0', 'teacher2@school.edu', FALSE);
-INSERT INTO teacher (name, idcard, password, sex, introduction, profession, college, email, verify) VALUES ('Teacher_3', 'IDCARDT0000003', 'pass3', 'M', 'Introduction for teacher 3', 'Profession_0', 'College_1', 'teacher3@school.edu', FALSE);
-INSERT INTO teacher (name, idcard, password, sex, introduction, profession, college, email, verify) VALUES ('Teacher_4', 'IDCARDT0000004', 'pass4', 'F', 'Introduction for teacher 4', 'Profession_1', 'College_0', 'teacher4@school.edu', FALSE);
-INSERT INTO teacher (name, idcard, password, sex, introduction, profession, college, email, verify) VALUES ('Teacher_5', 'IDCARDT0000005', 'pass5', 'U', 'Introduction for teacher 5', 'Profession_2', 'College_1', 'teacher5@school.edu', FALSE);
-INSERT INTO class_plan (name, introduction, profession, college, credit, type) VALUES ('Plan_1', 'Introduction_1', 'Profession_1', 'College_1', 3, 'B');
-INSERT INTO class_plan (name, introduction, profession, college, credit, type) VALUES ('Plan_2', 'Introduction_2', 'Profession_2', 'College_0', 4, 'X');
-INSERT INTO class_plan (name, introduction, profession, college, credit, type) VALUES ('Plan_3', 'Introduction_3', 'Profession_0', 'College_1', 2, 'G');
-INSERT INTO class_plan (name, introduction, profession, college, credit, type) VALUES ('Plan_4', 'Introduction_4', 'Profession_1', 'College_0', 5, 'S');
-INSERT INTO class_plan (name, introduction, profession, college, credit, type) VALUES ('Plan_5', 'Introduction_5', 'Profession_2', 'College_1', 3, 'B');
-INSERT INTO class (num, max_num, class_plan_id, teacher_id) VALUES (15, 30, 1, 1);
-INSERT INTO class (num, max_num, class_plan_id, teacher_id) VALUES (20, 30, 2, 2);
-INSERT INTO class (num, max_num, class_plan_id, teacher_id) VALUES (12, 30, 3, 3);
-INSERT INTO class (num, max_num, class_plan_id, teacher_id) VALUES (10, 30, 4, 4);
-INSERT INTO class (num, max_num, class_plan_id, teacher_id) VALUES (18, 30, 5, 5);
-INSERT INTO class_schedule (start_time, end_time, classtype, classroom, class_id) VALUES ('2024-06-16 08:00:00', '2024-06-16 10:00:00', 'C', 'Room_101', 1);
-INSERT INTO class_schedule (start_time, end_time, classtype, classroom, class_id) VALUES ('2024-06-17 09:00:00', '2024-06-17 11:00:00', 'S', 'Room_202', 2);
-INSERT INTO class_schedule (start_time, end_time, classtype, classroom, class_id) VALUES ('2024-06-18 10:00:00', '2024-06-18 12:00:00', 'C', 'Room_303', 3);
-INSERT INTO class_schedule (start_time, end_time, classtype, classroom, class_id) VALUES ('2024-06-19 11:00:00', '2024-06-19 13:00:00', 'S', 'Room_404', 4);
-INSERT INTO class_schedule (start_time, end_time, classtype, classroom, class_id) VALUES ('2024-06-20 12:00:00', '2024-06-20 14:00:00', 'C', 'Room_505', 5);
+-- 插入 student 样例数据
+INSERT INTO student (name, idcard, sex, password, age, classer, profession, college, email, verify) 
+VALUES 
+('张三', '123456789012345678', 'M', 'password123', 20, '计算机101', '计算机科学', '信息学院', 'zhangsan@example.com', TRUE),
+('李四', '987654321098765432', 'F', 'password456', 22, '软件201', '软件工程', '信息学院', 'lisi@example.com', FALSE);
 
-INSERT INTO student_course (student_id, class_id, grade, enrolled_date) VALUES (1, 1, 65, '2024-06-20 14:00:00');
-INSERT INTO class (num, max_num, class_plan_id, teacher_id) VALUES (30, 30, 1, 2);
-INSERT INTO class (num, max_num, class_plan_id, teacher_id) VALUES (15, 30, 1, 3);
-INSERT INTO class (num, max_num, class_plan_id, teacher_id) VALUES (16, 30, 1, 5);
-INSERT INTO class (num, max_num, class_plan_id, teacher_id) VALUES (20, 30, 1, 2);
+-- 插入 teacher 样例数据
+INSERT INTO teacher (name, idcard, password, sex, introduction, profession, college, email, verify) 
+VALUES 
+('王老师', '123456789012345678', 'password789', 'M', '拥有10年教学经验', '计算机科学', '信息学院', 'wanglaoshi@example.com', TRUE),
+('刘教授', '987654321098765432', 'password101', 'F', '研究方向为人工智能', '软件工程', '信息学院', 'liujiaoshou@example.com', FALSE);
+
+-- 插入 class_plan 样例数据
+INSERT INTO class_plan (name, introduction, profession, college, credit, type) 
+VALUES 
+('计算机基础', '计算机基础知识课程', '计算机科学', '信息学院', 3, 'B'),
+('人工智能导论', '人工智能基础课程', '软件工程', '信息学院', 4, 'X');
+
+-- 插入 class 样例数据
+INSERT INTO class (num, max_num, class_plan_id, teacher_id) 
+VALUES 
+(30, 50, 1, 1),
+(40, 60, 2, 2);
+
+-- 插入 classroom 样例数据
+INSERT INTO classroom (name, capacity, type, location) 
+VALUES 
+('Lab1', 40, 'C', 'Building A, Floor 2'),
+('Room101', 30, 'S', 'Building B, Floor 3');
+
+-- 插入 class_schedule 样例数据
+INSERT INTO class_schedule (start_time, end_time, classroom_id, class_id) 
+VALUES 
+('2024-01-01 08:00:00', '2024-01-01 10:00:00', 1, 1),
+('2024-01-02 10:00:00', '2024-01-02 12:00:00', 2, 2);
+
+-- 插入 enrollment_history 样例数据
+INSERT INTO enrollment_history (student_id, class_id, action_type, action_date) 
+VALUES 
+(1, 1, 'Enroll', '2024-01-01 09:00:00'),
+(2, 2, 'Drop', '2024-01-02 11:00:00');
+
+-- 插入 feedback 样例数据
+INSERT INTO feedback (title, content, created, is_read) 
+VALUES 
+('关于课程安排的建议', '希望调整课程时间，避免冲突', 1, 0),
+('关于教室设施的反馈', '教室设备损坏较多，请及时维修', 2, 1);
+
+-- 插入 student_course 样例数据
+INSERT INTO student_course (student_id, class_id, grade, enrolled_date) 
+VALUES 
+(1, 1, 85.5, '2024-01-01 09:00:00'),
+(2, 2, 92.0, '2024-01-02 10:00:00');
+
+-- 插入 admin 样例数据
+INSERT INTO admin (name, password) 
+VALUES 
+('系统管理员', 'admin123'),
+('超级管理员', 'superadmin456');
+
+-- 插入 system_status 样例数据
+INSERT INTO system_status (selection_start_time, selection_end_time, scheduling_start_time, scheduling_end_time, selection_status, scheduling_status) 
+VALUES 
+('2024-01-01 00:00:00', '2024-01-10 23:59:59', '2024-01-15 00:00:00', '2024-01-20 23:59:59', 'Pending', 'Ongoing');
+

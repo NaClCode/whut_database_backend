@@ -23,8 +23,6 @@ async def get_courses_for_month(body: CourseTableSchema = Depends(), token_paylo
         return JSONResponse(status_code=400, content={"status": 1, "message": "Invalid time format, expected YYYY-MM"})
 
     try:
-        print(year)
-        print(month)
         data = StudentCourseCrud.get_courses_by_month(db, student_id=user_id, month=month, year = year)
     except Exception as e:
         traceback.print_exc()
