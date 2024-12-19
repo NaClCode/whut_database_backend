@@ -161,11 +161,6 @@ VALUES
 (1, 1, 85.5, '2024-01-01 09:00:00'),
 (2, 2, 92.0, '2024-01-02 10:00:00');
 
--- 插入 admin 样例数据
-INSERT INTO admin (name, password) 
-VALUES 
-('系统管理员', 'admin123'),
-('超级管理员', 'superadmin456');
 
 -- 插入 system_status 样例数据
 INSERT INTO system_status (selection_start_time, selection_end_time, scheduling_start_time, scheduling_end_time, selection_status, scheduling_status) 
