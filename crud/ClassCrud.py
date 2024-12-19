@@ -20,34 +20,27 @@ class ClassCrud(AbstractCrud[Class]):
     
     @staticmethod
     def get_by_id(db: Session, record_id: int):
-        """
-        根据ID获取课程记录，并返回包含多个课程安排的列表
-        """
-
-        class_record = db.query(Class).filter(Class.id == record_id).first()
+        class_record = db.query(Class).filter(Class.id == record_id).one_or_none()
         if not class_record:
             return None
-
-        teacher_record = db.query(Teacher).filter(Teacher.id == class_record.teacher_id).first()
-        
+        teacher_record = db.query(Teacher).filter(Teacher.id == class_record.teacher_id).one_or_none()
         schedule_records = db.query(ClassSchedule).filter(ClassSchedule.class_id == record_id).all()
-        
-        data = {
-            "class_id": class_record.id,
-            "class_num": class_record.num,
-            "max_num": class_record.max_num,
-            "teacher_name": teacher_record.name if teacher_record else None,
-            "schedules": [
-                {
-                    "start_time": schedule.start_time,
-                    "end_time": schedule.end_time,
-                    "classroom": schedule.classroom,
-                    "classtype": schedule.classtype
-                }
-                for schedule in schedule_records
-            ]
-        }
 
+        data = {
+                "class_id": class_record.id,
+                "class_num": class_record.num,
+                "max_num": class_record.max_num,
+                "teacher_name": teacher_record.name if teacher_record else None,
+                "schedules": [
+                    {
+                        "start_time": schedule.start_time,
+                        "end_time": schedule.end_time,
+                        "classroom": schedule.classroom.name,
+                        "classtype": schedule.classroom.type
+                    }
+                    for schedule in schedule_records
+                ]
+            }
         return data
 
     
