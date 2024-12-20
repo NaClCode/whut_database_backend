@@ -6,6 +6,7 @@ from model.SCModel import StudentCourse
 from model.ClassModel import Class
 from model.ClassScheduleModel import ClassSchedule
 from model.ClassPlanModel import ClassPlan
+from sqlalchemy.sql import func
 
 class StudentCourseCrud:
     @staticmethod
@@ -114,34 +115,33 @@ class StudentCourseCrud:
     
     @staticmethod
     def get_courses_by_day(db: Session, student_id: int, specific_date: datetime) -> List[dict]:
-        """
-        获取学生在某一天的课程信息，包括课程名称、时间和上课地点
-        """
-        from sqlalchemy.sql import func
+     """
+     获取学生在某一天的课程信息，包括课程名称、时间和上课地点
+     """
+     from sqlalchemy.sql import func
 
-        course_details = db.query(
-            ClassPlan.name.label('course_name'),
-            ClassSchedule
-        ).select_from(StudentCourse).join(
-            Class, StudentCourse.class_id == Class.id
-        ).join(
-            ClassPlan, ClassPlan.id == Class.class_plan_id
-        ).join(
-            ClassSchedule, ClassSchedule.class_id == Class.id
-        ).filter(
-            StudentCourse.student_id == student_id,
-            func.date(ClassSchedule.start_time) == specific_date.date()
-        ).all()
+     course_details = db.query(
+        ClassPlan.name.label('course_name'),
+        ClassSchedule
+     ).select_from(StudentCourse).join(
+        Class, StudentCourse.class_id == Class.id
+     ).join(
+        ClassPlan, ClassPlan.id == Class.class_plan_id
+     ).join(
+        ClassSchedule, ClassSchedule.class_id == Class.id
+     ).filter(
+        StudentCourse.student_id == student_id,
+        func.date(ClassSchedule.start_time) == specific_date.date()
+     ).all()
 
-        return [
-            {
-                'name': name,
-                'start_time': course.start_time,
-                'end_time': course.end_time,
-                'classroom': course.classroom
-            }
-            for name, course in course_details
-        ]
+     return [{
+          'name': name,
+          'start_time': course.start_time,
+          'end_time': course.end_time,
+          'classroom': course.classroom
+        }
+        for name, course in course_details
+    ]
 
     @staticmethod
     def get_student_grade_page(

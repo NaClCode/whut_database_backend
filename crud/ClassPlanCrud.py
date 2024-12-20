@@ -43,7 +43,7 @@ class ClassPlanCrud(AbstractCrud[ClassPlan]):
         """
 
         selected_subquery = (
-            db.query(ClassPlan.id == Class.class_plan_id)
+            db.query(ClassPlan.id)
                 .join(Class, ClassPlan.id == Class.class_plan_id)
                 .join(StudentCourse, 
                     (StudentCourse.class_id == Class.id) & (StudentCourse.student_id == student_id))
@@ -62,6 +62,8 @@ class ClassPlanCrud(AbstractCrud[ClassPlan]):
                         case(
                             (ClassPlan.id.in_(db.query(selected_subquery_select)), 1), else_=0
                         ).label("is_selected"))
+        
+
 
         filters = []
 

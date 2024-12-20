@@ -1,5 +1,5 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
+from datetime import datetime
 class Config(BaseSettings):
     bind_host: str = "0.0.0.0"
     bind_port: int = 8000
@@ -29,5 +29,13 @@ class Config(BaseSettings):
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
+    select_start_time: datetime = datetime(1970, 1, 1, 0, 0, 0)
+    select_end_time: datetime = datetime(2099, 12, 31, 23, 59, 59)
 
+    grade_start_time: datetime = datetime(1970, 1, 1, 0, 0, 0)
+    grade_end_time: datetime = datetime(2099, 12, 31, 23, 59, 59)
+
+    schedule_start_time: datetime = datetime(1970, 1, 1, 0, 0, 0)
+    schedule_end_time: datetime = datetime(2099, 12, 31, 23, 59, 59)
+    
 config = Config()

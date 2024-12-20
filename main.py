@@ -12,6 +12,7 @@ from service.user import user_router
 from service.teacher import teacher_router
 from service.student import student_router
 from service.course import course_router
+from service.admin import admin_router
 
 Base.metadata.create_all(bind=engine)
 
@@ -29,6 +30,7 @@ app.include_router(user_router, prefix="/user")
 app.include_router(teacher_router, prefix='/teacher')
 app.include_router(student_router, prefix='/student')
 app.include_router(course_router, prefix='/course')
+app.include_router(admin_router, prefix='/admin')
 
 @app.get("/")
 async def root():
