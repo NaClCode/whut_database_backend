@@ -4,7 +4,6 @@ from datetime import datetime
 from typing import List, Union
 from model.SCModel import StudentCourse
 from model.ClassModel import Class
-from model.TeacherModel import Teacher
 from model.ClassScheduleModel import ClassSchedule
 from model.ClassPlanModel import ClassPlan
 

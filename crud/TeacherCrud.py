@@ -1,7 +1,12 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import extract, func
 from model.TeacherModel import Teacher
+from model.ClassPlanModel import ClassPlan
+from model.ClassModel import Class
+from model.ClassScheduleModel import ClassSchedule
+from typing import List, Union
+from datetime import datetime
 from .Crud import AbstractCrud
-from typing import Union
 
 class TeacherCrud(AbstractCrud[Teacher]):
     @staticmethod
@@ -35,6 +40,59 @@ class TeacherCrud(AbstractCrud[Teacher]):
     @staticmethod
     def get_by_email(db: Session, email: str) -> Union[Teacher, None]:
         """
-        根据邮箱获取学生记录
+        根据邮箱获取教师记录
         """
         return db.query(Teacher).filter(Teacher.email == email).first()
+
+    @staticmethod
+    def get_courses_by_month(db: Session, teacher_id: int, month: int, year: int) -> List[dict]:
+        """
+        获取教师在某个月份的所有课程安排
+        """
+        records = db.query(
+            ClassPlan.name.label('course_name'),
+            ClassSchedule.start_time
+        ).join(
+            Class, ClassPlan.id == Class.class_plan_id
+        ).join(
+            ClassSchedule, Class.id == ClassSchedule.class_id
+        ).filter(
+            Class.teacher_id == teacher_id,
+            extract('month', ClassSchedule.start_time) == month,
+            extract('year', ClassSchedule.start_time) == year
+        ).all()
+
+        return [
+            {"name": course_name, "date": start_time}
+            for course_name, start_time in records
+        ]
+
+    @staticmethod
+    def get_courses_by_day(db: Session, teacher_id: int, specific_date: datetime) -> List[dict]:
+        """
+        获取教师在某一天的课程安排
+        """
+        records = db.query(
+            ClassPlan.name.label('course_name'),
+            ClassSchedule.start_time,
+            ClassSchedule.end_time,
+            ClassSchedule.classroom
+        ).join(
+            Class, ClassPlan.id == Class.class_plan_id
+        ).join(
+            ClassSchedule, Class.id == ClassSchedule.class_id
+        ).filter(
+            Class.teacher_id == teacher_id,
+            func.date(ClassSchedule.start_time) == specific_date.date()
+        ).all()
+
+        return [
+            {
+                "name": course_name,
+                "start_time": start_time,
+                "end_time": end_time,
+                "classroom": classroom
+            }
+            for course_name, start_time, end_time, classroom in records
+        ]
+
