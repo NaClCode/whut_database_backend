@@ -5,13 +5,13 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from crud.EnrollmentHistoryCrud import EnrollmentHistoryCrud
 
-from utils.auth_token import validate_token
+from utils.auth_token import validate_student_token
 from utils.get_db import get_db
 from schema.course.CourseHistorySchema import CourseHistorySchema
 history_router = APIRouter()
 
 @history_router.get("/history")
-async def _(body: CourseHistorySchema = Depends(), token_payload: dict = Depends(validate_token), db: Session = Depends(get_db)):
+async def _(body: CourseHistorySchema = Depends(), token_payload: dict = Depends(validate_student_token), db: Session = Depends(get_db)):
     user_id = token_payload.get("user_id")
     action_type = body.action_type
     class_id = body.class_id

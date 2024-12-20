@@ -5,14 +5,14 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from crud.StudentCrud import StudentCrud
-from utils.auth_token import validate_token
+from utils.auth_token import validate_student_token
 from utils.get_db import get_db
 from model.StudentModel import Student
 
 get_info_router = APIRouter()
 
 @get_info_router.get("/getInfo")
-async def _(token_payload: dict = Depends(validate_token), db: Session = Depends(get_db)):
+async def _(token_payload: dict = Depends(validate_student_token), db: Session = Depends(get_db)):
     user_id = token_payload.get("user_id")
 
     try:

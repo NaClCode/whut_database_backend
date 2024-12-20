@@ -96,16 +96,7 @@ CREATE TABLE admin (
     password VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE system_status (
-    id INTEGER PRIMARY KEY AUTO_INCREMENT,         -- 唯一标识符
-    selection_start_time DATETIME NOT NULL,        -- 选课开始时间
-    selection_end_time DATETIME NOT NULL,          -- 选课结束时间
-    scheduling_start_time DATETIME NOT NULL,       -- 排课开始时间
-    scheduling_end_time DATETIME NOT NULL,         -- 排课结束时间
-    selection_status ENUM('Pending', 'Ongoing', 'Finished') NOT NULL DEFAULT 'Pending', -- 选课当前状态
-    scheduling_status ENUM('Pending', 'Ongoing', 'Finished') NOT NULL DEFAULT 'Pending', -- 排课当前状态
-    last_updated DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP -- 上次更新时间
-);
+
 
 -- 插入 student 样例数据
 INSERT INTO student (name, idcard, sex, password, age, classer, profession, college, email, verify) 
@@ -160,10 +151,3 @@ INSERT INTO student_course (student_id, class_id, grade, enrolled_date)
 VALUES 
 (1, 1, 85.5, '2024-01-01 09:00:00'),
 (2, 2, 92.0, '2024-01-02 10:00:00');
-
-
--- 插入 system_status 样例数据
-INSERT INTO system_status (selection_start_time, selection_end_time, scheduling_start_time, scheduling_end_time, selection_status, scheduling_status) 
-VALUES 
-('2024-01-01 00:00:00', '2024-01-10 23:59:59', '2024-01-15 00:00:00', '2024-01-20 23:59:59', 'Pending', 'Ongoing');
-

@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from config import config
 from crud.TeacherCrud import TeacherCrud
 from schema.teacher.TeacherUpdateInfoSchema import TeacherUpdateInfoSchema
-from utils.auth_token import validate_token
+from utils.auth_token import validate_teacher_token
 from utils.get_db import get_db
 from utils.hash_string import hash_string
 from model.TeacherModel import Teacher
@@ -15,7 +15,7 @@ from model.TeacherModel import Teacher
 update_info_router = APIRouter()
 
 @update_info_router.put("/updateInfo")
-async def _(body: TeacherUpdateInfoSchema, token_payload: dict = Depends(validate_token), db: Session = Depends(get_db)):
+async def _(body: TeacherUpdateInfoSchema, token_payload: dict = Depends(validate_teacher_token), db: Session = Depends(get_db)):
     user_id = token_payload.get("user_id")
     username = body.username
     password = body.password

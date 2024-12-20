@@ -27,3 +27,27 @@ def validate_token(authorization=Header(None)) -> dict:
         return extract_payload(authorization)
     except (jwt.PyJWTError, jwt.ExpiredSignatureError, ValidationError, AttributeError):
         raise HTTPException(status_code=401, detail='token无效, 请重新验证')
+
+def validate_student_token(authorization=Header(None)) -> dict:
+    try:
+        payload = extract_payload(authorization)
+        if payload.get('usertype') != 'student': raise HTTPException(status_code=401, detail='token无效, 请重新验证')
+        return payload
+    except (jwt.PyJWTError, jwt.ExpiredSignatureError, ValidationError, AttributeError):
+        raise HTTPException(status_code=401, detail='token无效, 请重新验证')
+
+def validate_teacher_token(authorization=Header(None)) -> dict:
+    try:
+        payload = extract_payload(authorization)
+        if payload.get('usertype') != 'teacher': raise HTTPException(status_code=401, detail='token无效, 请重新验证')
+        return payload
+    except (jwt.PyJWTError, jwt.ExpiredSignatureError, ValidationError, AttributeError):
+        raise HTTPException(status_code=401, detail='token无效, 请重新验证')
+
+def validate_admin_token(authorization=Header(None)) -> dict:
+    try:
+        payload = extract_payload(authorization)
+        if payload.get('usertype') != 'admin': raise HTTPException(status_code=401, detail='token无效, 请重新验证')
+        return payload
+    except (jwt.PyJWTError, jwt.ExpiredSignatureError, ValidationError, AttributeError):
+        raise HTTPException(status_code=401, detail='token无效, 请重新验证')

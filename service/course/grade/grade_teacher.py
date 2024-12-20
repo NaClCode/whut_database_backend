@@ -4,14 +4,14 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from crud.SCCrud import StudentCourseCrud
 from schema.course.CourseGradeSchema import CourseGradeSchema 
-from utils.auth_token import validate_token
+from utils.auth_token import validate_teacher_token
 from utils.get_db import get_db
 import traceback
 
-grade_router = APIRouter()
+grade_teacher_router = APIRouter()
 
-@grade_router.get("/grade")
-async def get_courses_for_month(body: CourseGradeSchema = Depends(), token_payload: dict = Depends(validate_token), db: Session = Depends(get_db)):
+@grade_teacher_router.get("/teacher")
+async def _(body: CourseGradeSchema = Depends(), token_payload: dict = Depends(validate_teacher_token), db: Session = Depends(get_db)):
     user_id = token_payload.get("user_id")
     page = body.page
     pagesize = body.pagesize  

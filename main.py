@@ -25,8 +25,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-#app.mount("/avatar", StaticFiles(directory="avatar"), name="avatar")
-#app.mount("/upload", StaticFiles(directory="upload"), name="upload")
 app.include_router(user_router, prefix="/user")
 app.include_router(teacher_router, prefix='/teacher')
 app.include_router(student_router, prefix='/student')

@@ -6,13 +6,13 @@ from sqlalchemy.orm import Session
 from schema.course.classer.CourseClasserListSchema import CourseClasserListSchema
 
 from crud.ClassCrud import ClassCrud
-from utils.auth_token import validate_token
+from utils.auth_token import validate_student_token
 from utils.get_db import get_db
 
 list_router = APIRouter()
 
 @list_router.get("/list")
-async def _(body:CourseClasserListSchema = Depends(), token_payload: dict = Depends(validate_token), db: Session = Depends(get_db)):
+async def _(body:CourseClasserListSchema = Depends(), token_payload: dict = Depends(validate_student_token), db: Session = Depends(get_db)):
     user_id = token_payload.get("user_id")
     id = body.id
     page = body.page

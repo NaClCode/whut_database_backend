@@ -4,14 +4,14 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from crud.SCCrud import StudentCourseCrud
 from schema.course.CourseDayTableSchema import CourseDayTableSchema
-from utils.auth_token import validate_token
+from utils.auth_token import validate_student_token
 from utils.get_db import get_db
 import traceback
 
 day_table_router = APIRouter()
 
 @day_table_router.get("/dayTable")
-async def get_courses_for_month(body: CourseDayTableSchema = Depends(), token_payload: dict = Depends(validate_token), db: Session = Depends(get_db)):
+async def _(body: CourseDayTableSchema = Depends(), token_payload: dict = Depends(validate_student_token), db: Session = Depends(get_db)):
     user_id = token_payload.get("user_id")
     time_str = body.time  
 

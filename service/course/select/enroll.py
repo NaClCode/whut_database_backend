@@ -6,13 +6,13 @@ from sqlalchemy.orm import Session
 from schema.course.CourseEnrollSchema import CourseEnrollSchema
 from crud.EnrollCrud import EnrollCrud
 
-from utils.auth_token import validate_token
+from utils.auth_token import validate_student_token
 from utils.get_db import get_db
 from datetime import datetime
 enroll_router = APIRouter()
 
 @enroll_router.post("/enroll")
-async def enroll_course(body: CourseEnrollSchema, token_payload: dict = Depends(validate_token), db: Session = Depends(get_db)):
+async def _(body: CourseEnrollSchema, token_payload: dict = Depends(validate_student_token), db: Session = Depends(get_db)):
     user_id = token_payload.get("user_id")
     class_id = body.classid
     time = datetime.now()

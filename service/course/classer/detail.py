@@ -5,13 +5,12 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from schema.course.classer.CourseClasserDetailSchema import CourseClasserDetailSchema
 from crud.ClassCrud import ClassCrud
-from utils.auth_token import validate_token
+from utils.auth_token import validate_student_token
 from utils.get_db import get_db
-from model.ClassModel import Class
 detail_router = APIRouter()
 
 @detail_router.get("/detail")
-async def _(body:CourseClasserDetailSchema = Depends(), token_payload: dict = Depends(validate_token), db: Session = Depends(get_db)):
+async def _(body:CourseClasserDetailSchema = Depends(), token_payload: dict = Depends(validate_student_token), db: Session = Depends(get_db)):
     user_id = token_payload.get("user_id")
     id = body.id
 
