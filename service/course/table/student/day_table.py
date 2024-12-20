@@ -17,9 +17,7 @@ async def _(body: CourseDayTableSchema = Depends(), token_payload: dict = Depend
 
     try:
         time_obj = datetime.strptime(time_str, "%Y-%m-%d")
-        print(user_id)
-        print(token_payload)
-        print(time_obj)
+
     except ValueError as e:
         return JSONResponse(status_code=400, content={"status": 1, "message": "Invalid time format, expected YYYY-MM"})
 

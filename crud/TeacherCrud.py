@@ -74,9 +74,7 @@ class TeacherCrud(AbstractCrud[Teacher]):
         """
         records = db.query(
             ClassPlan.name.label('course_name'),
-            ClassSchedule.start_time,
-            ClassSchedule.end_time,
-            ClassSchedule.classroom
+            ClassSchedule
         ).join(
             Class, ClassPlan.id == Class.class_plan_id
         ).join(
@@ -88,11 +86,14 @@ class TeacherCrud(AbstractCrud[Teacher]):
 
         return [
             {
-                "name": course_name,
-                "start_time": start_time,
-                "end_time": end_time,
-                "classroom": classroom
+                "name": name,
+                "start_time": course.start_time,
+                "end_time": course.end_time,
+                "classroom": course.classroom
             }
-            for course_name, start_time, end_time, classroom in records
+            for name, course in records
         ]
 
+
+
+    
