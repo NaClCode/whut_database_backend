@@ -10,14 +10,11 @@ select_router = APIRouter()
 
 @select_router.put("/select")
 async def put(
-    body:AdminTimeSchema = Depends(), token_payload: dict = Depends(validate_admin_token),
+    body:AdminTimeSchema, token_payload: dict = Depends(validate_admin_token),
 ):
     try:
-        start_time_dt = datetime.fromisoformat(body.start_time)
-        end_time_dt = datetime.fromisoformat(body.end_time)
-
-        if start_time_dt >= end_time_dt:
-            raise ValueError("开始时间必须早于结束时间。")
+        start_time_dt = datetime.strptime(body.start_time, "%Y-%m-%d %H:%M:%S")
+        end_time_dt = datetime.strptime(body.end_time, "%Y-%m-%d %H:%M:%S")
 
         config.select_start_time = start_time_dt
         config.select_end_time = end_time_dt

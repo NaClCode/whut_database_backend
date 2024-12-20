@@ -10,14 +10,11 @@ grade_router = APIRouter()
 
 @grade_router.put("/grade")
 async def put(
-    body:AdminTimeSchema = Depends(), token_payload: dict = Depends(validate_admin_token),
+    body:AdminTimeSchema, token_payload: dict = Depends(validate_admin_token),
 ):
     try:
-        start_time_dt = datetime.fromisoformat(body.start_time)
-        end_time_dt = datetime.fromisoformat(body.end_time)
-
-        if start_time_dt >= end_time_dt:
-            raise ValueError("开始时间必须早于结束时间。")
+        start_time_dt = datetime.strptime(body.start_time, "%Y-%m-%d %H:%M:%S")
+        end_time_dt = datetime.strptime(body.end_time, "%Y-%m-%d %H:%M:%S")
 
         config.grade_start_time = start_time_dt
         config.grade_end_time = end_time_dt
@@ -32,8 +29,8 @@ async def put(
         "status": 0,
         "message": "OK",
         "data": {
-            "start_time": start_time_dt.isoformat("%Y-%m-%d %H:%M:%S"),
-            "end_time": end_time_dt.isoformat("%Y-%m-%d %H:%M:%S")
+            "start_time": start_time_dt.strftime("%Y-%m-%d %H:%M:%S"),
+            "end_time": end_time_dt.strftime("%Y-%m-%d %H:%M:%S")
         }
     }
 
@@ -47,8 +44,8 @@ async def get(
             "status": 0,
             "message": "OK",
             "data": {
-                "start_time": config.grade_start_time.isoformat("%Y-%m-%d %H:%M:%S"),
-                "end_time": config.grade_end_time.isoformat("%Y-%m-%d %H:%M:%S"),
+                "start_time": config.grade_start_time.strftime("%Y-%m-%d %H:%M:%S"),
+                "end_time": config.grade_end_time.strftime("%Y-%m-%d %H:%M:%S"),
             },
         }
     except Exception as e:
