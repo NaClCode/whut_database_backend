@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+service OptimizationService {
+  rpc SolveOptimization (OptimizationRequest) returns (OptimizationResponse);
+}
+
+message OptimizationRequest {
+  repeated Matrix w_i = 1;
+  repeated Matrix ww_j = 2;
+}
+
+message OptimizationResponse {
+    repeated float x = 1;
+    repeated float y = 2;
+    bool success = 3;
+}
+
+
+message Matrix {
+  repeated int32 data = 1;
+  int32 rows = 2;
+  int32 cols = 3;
+}

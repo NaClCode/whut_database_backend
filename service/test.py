@@ -18,7 +18,9 @@ async def get_student_schedule(
 
     try:
 
-        schedule_matrix = ScheduleCrud.get_student_schedule_matrix(db, course_id, start_date, end_date)
+        student_schedule_matrix = ScheduleCrud.get_student_schedule_matrix(db, course_id, start_date, end_date)
+        
+        classroom_schedule_matrix = ScheduleCrud.get_classroom_schedule_matrix(db, [1, 2], start_date, end_date)
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(status_code=500, content={"status": 1, "message": f"Database Error: {e}"})
@@ -26,5 +28,6 @@ async def get_student_schedule(
     return {
         "status": 0,
         "message": "OK",
-        "data": schedule_matrix 
+        "sdata": student_schedule_matrix,
+        "cdate": classroom_schedule_matrix 
     }

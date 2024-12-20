@@ -56,3 +56,47 @@ class ScheduleCrud:
                     schedule_matrix[student_idx, day_idx, timeslot] = 1
             
         return schedule_matrix.tolist()
+    
+    @staticmethod
+    def get_classroom_schedule_matrix(db: Session, classroom_ids: list, start_date: str, end_date: str):
+        
+        date_range = pd.date_range(start=start_date, end=end_date).strftime('%Y-%m-%d').tolist()
+        date_to_idx = {date: idx for idx, date in enumerate(date_range)}
+
+        time_slots = {
+            8: 0,   # 8:00-10:00
+            10: 1,  # 10:00-12:00
+            14: 2,  # 14:00-16:00
+            16: 3,  # 16:00-18:00
+            19: 4,  # 19:00-21:00
+        }
+
+        num_classrooms = len(classroom_ids)
+        num_days = len(date_range)
+        
+        schedule_matrix = np.zeros((num_classrooms, num_days, 5), dtype=int)
+
+        classroom_id_to_index = {classroom_id: idx for idx, classroom_id in enumerate(classroom_ids)}
+
+        query = db.query(
+            ClassSchedule.classroom_id,
+            ClassSchedule.start_time
+        ).filter(
+            ClassSchedule.classroom_id.in_(classroom_ids),
+            ClassSchedule.start_time.between(start_date, end_date)
+        ).order_by(ClassSchedule.classroom_id, ClassSchedule.start_time).all()
+
+        for row in query:
+            classroom_id = row.classroom_id
+            start_time = row.start_time
+
+            classroom_idx = classroom_id_to_index[classroom_id]
+
+            day_idx = date_to_idx.get(str(start_time.date()))
+
+            for start_hour, timeslot in time_slots.items():
+                if start_hour == start_time.hour:
+                    schedule_matrix[classroom_idx, day_idx, timeslot] = 1
+
+        return schedule_matrix.tolist()
+
