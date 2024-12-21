@@ -5,22 +5,24 @@ from sqlalchemy.orm import Session
 from crud.ScheduleCrud import ScheduleCrud
 from utils.auth_token import validate_teacher_token
 from utils.get_db import get_db
-import numpy as np
-router = APIRouter()
+from utils.opt_client.opt import run_opt_client
 
-@router.get("/get")
+import numpy as np
+test_router = APIRouter()
+
+@test_router.get("/get")
 async def get_student_schedule(
-    course_id: int,
-    start_date: str,
-    end_date: str,
+    # course_id: int,
+    # start_date: str,
+    # end_date: str,
     db: Session = Depends(get_db)
 ):
 
     try:
 
-        student_schedule_matrix = ScheduleCrud.get_student_schedule_matrix(db, course_id, start_date, end_date)
+        # student_schedule_matrix = ScheduleCrud.get_student_schedule_matrix(db, course_id, start_date, end_date)
         
-        classroom_schedule_matrix = ScheduleCrud.get_classroom_schedule_matrix(db, [1, 2], start_date, end_date)
+        # classroom_schedule_matrix = ScheduleCrud.get_classroom_schedule_matrix(db, [1, 2], start_date, end_date)
 
         server_address = "localhost:50051"
         day_num = 7
@@ -51,6 +53,6 @@ async def get_student_schedule(
     return {
         "status": 0,
         "message": "OK",
-        "sdata": student_schedule_matrix,
-        "cdate": classroom_schedule_matrix 
+        # "sdata": student_schedule_matrix,
+        # "cdate": classroom_schedule_matrix 
     }

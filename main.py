@@ -12,7 +12,7 @@ from service.teacher import teacher_router
 from service.student import student_router
 from service.course import course_router
 from service.admin import admin_router
-from service.test import router
+
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title='DATABASE', debug=True)
@@ -30,7 +30,7 @@ app.include_router(teacher_router, prefix='/teacher')
 app.include_router(student_router, prefix='/student')
 app.include_router(course_router, prefix='/course')
 app.include_router(admin_router, prefix='/admin')
-app.include_router(router, prefix='/test')
+
 @app.get("/")
 async def root():
     return {

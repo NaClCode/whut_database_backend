@@ -1,7 +1,7 @@
 import grpc
 import numpy as np
-import opt_pb2
-import opt_pb2_grpc
+import utils.opt_client.opt_pb2 as opt_pb2
+import utils.opt_client.opt_pb2_grpc as opt_pb2_grpc
 
 def run_opt_client(server_address, day_num, student_num, classroom_num, schedule_classroom_num, schedule_class_num, student_w=None, classroom_w=None, day_w=None, day_5=None):
     channel = grpc.insecure_channel(server_address)
