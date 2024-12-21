@@ -8,3 +8,4 @@ PyMySQL
 python-multipart
 aiohttp
 sse_starlette
+grpcio

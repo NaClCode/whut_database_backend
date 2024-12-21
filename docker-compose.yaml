@@ -1,0 +1,19 @@
+version: '3'
+services:
+  db:
+    image: mysql
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./sql/log:/var/log/mysql
+      - ./sql/data:/var/lib/mysql
+      - ./sql/init:/docker-entrypoint-initdb.d
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: qwert12345
+  web:
+    build: ./
+    ports:
+      - "8000:8080"
+    volumes:
+      - ./WorkDir:/home/WorkDir

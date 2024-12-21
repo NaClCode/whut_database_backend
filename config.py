@@ -37,5 +37,7 @@ class Config(BaseSettings):
 
     schedule_start_time: datetime = datetime(1970, 1, 1, 0, 0, 0)
     schedule_end_time: datetime = datetime(2099, 12, 31, 23, 59, 59)
+
+    schedule_address = "localhost:50051"
     
 config = Config()
