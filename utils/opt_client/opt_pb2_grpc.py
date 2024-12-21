@@ -25,7 +25,7 @@ if _version_not_supported:
     )
 
 
-class OptimizationServiceStub(object):
+class ScheduleOptimizationStub(object):
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -34,43 +34,43 @@ class OptimizationServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.SolveOptimization = channel.unary_unary(
-                '/OptimizationService/SolveOptimization',
+        self.schedule_opt = channel.unary_unary(
+                '/ScheduleOptimization/schedule_opt',
                 request_serializer=opt__pb2.OptimizationRequest.SerializeToString,
                 response_deserializer=opt__pb2.OptimizationResponse.FromString,
                 _registered_method=True)
 
 
-class OptimizationServiceServicer(object):
+class ScheduleOptimizationServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def SolveOptimization(self, request, context):
+    def schedule_opt(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
 
-def add_OptimizationServiceServicer_to_server(servicer, server):
+def add_ScheduleOptimizationServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'SolveOptimization': grpc.unary_unary_rpc_method_handler(
-                    servicer.SolveOptimization,
+            'schedule_opt': grpc.unary_unary_rpc_method_handler(
+                    servicer.schedule_opt,
                     request_deserializer=opt__pb2.OptimizationRequest.FromString,
                     response_serializer=opt__pb2.OptimizationResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'OptimizationService', rpc_method_handlers)
+            'ScheduleOptimization', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('OptimizationService', rpc_method_handlers)
+    server.add_registered_method_handlers('ScheduleOptimization', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
-class OptimizationService(object):
+class ScheduleOptimization(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def SolveOptimization(request,
+    def schedule_opt(request,
             target,
             options=(),
             channel_credentials=None,
@@ -83,7 +83,7 @@ class OptimizationService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/OptimizationService/SolveOptimization',
+            '/ScheduleOptimization/schedule_opt',
             opt__pb2.OptimizationRequest.SerializeToString,
             opt__pb2.OptimizationResponse.FromString,
             options,

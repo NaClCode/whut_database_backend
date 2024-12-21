@@ -1,23 +1,26 @@
 syntax = "proto3";
 
-service OptimizationService {
-  rpc SolveOptimization (OptimizationRequest) returns (OptimizationResponse);
+service ScheduleOptimization {
+  rpc schedule_opt(OptimizationRequest) returns (OptimizationResponse);
 }
 
 message OptimizationRequest {
-  repeated Matrix w_i = 1;
-  repeated Matrix ww_j = 2;
+  repeated int32 student_w = 1;
+  repeated int32 classroom_w = 2;
+  repeated float day_w = 3;
+  repeated float day_5 = 4;
+  int32 student_num = 5;
+  int32 classroom_num = 6;
+  int32 day_num = 7;
+  int32 schedule_classroom_num = 8;
+  int32 schedule_class_num = 9;
 }
 
 message OptimizationResponse {
-    repeated float x = 1;
-    repeated float y = 2;
-    bool success = 3;
-}
-
-
-message Matrix {
-  repeated int32 data = 1;
-  int32 rows = 2;
-  int32 cols = 3;
+  float obj_value = 1;
+  float obj_pref = 2;
+  float obj_w = 3;
+  repeated float x = 4;
+  repeated float y = 5;
+  bool success = 6;
 }
