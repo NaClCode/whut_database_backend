@@ -7,7 +7,7 @@ from crud.EnrollmentHistoryCrud import EnrollmentHistoryCrud
 
 from utils.auth_token import validate_student_token
 from utils.get_db import get_db
-from schema.course.CourseHistorySchema import CourseHistorySchema
+from schema.course.select.CourseHistorySchema import CourseHistorySchema
 history_router = APIRouter()
 
 @history_router.get("/history")

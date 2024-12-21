@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from crud.SCCrud import StudentCourseCrud
-from schema.course.CourseGradeSchema import CourseGradeSchema 
+from schema.course.grade.CourseGradeSchema import CourseGradeSchema 
 from utils.auth_token import validate_teacher_token
 from utils.get_db import get_db
 import traceback

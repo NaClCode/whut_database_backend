@@ -3,7 +3,7 @@ import traceback
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
-from schema.course.CourseDropSchema import CourseDropSchema
+from schema.course.select.CourseDropSchema import CourseDropSchema
 from crud.EnrollCrud import EnrollCrud
 
 from utils.auth_token import validate_student_token
