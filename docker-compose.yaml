@@ -41,7 +41,7 @@ services:
     # 指定容器名称
     build: ./
     ports:
-      - "8000:8080"
+      - "8000:8000"
     volumes:
       - ./WorkDir:/home/WorkDir
     depends_on:
