@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:22.04
 COPY / /
 WORKDIR /
 RUN apt update && apt install -y python3 python3-pip
