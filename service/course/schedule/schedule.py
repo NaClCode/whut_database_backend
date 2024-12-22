@@ -37,46 +37,65 @@ async def _(body: ScheduleSchema, token_payload: dict = Depends(validate_teacher
         day_w = np.ones(day_num).tolist()
         day_5 = np.array(prefer).tolist()
 
+        print(student_schedule_matrix)
+        print(classroom_schedule_matrix)
+        print(student_schedule_matrix.shape)
+        print(classroom_schedule_matrix.shape)
+
         result = run_opt_client(config.schedule_address, day_num, 
                                 student_num, classroom_num, 1, 
                                 1, student_schedule_matrix.astype(int).flatten().tolist(), 
                                 classroom_schedule_matrix.astype(int).flatten().tolist(), day_w, day_5)
 
+        print(result)
+        print(day_w)
+        print(day_5)
         if result['state']:
+            if result['w'] < 0.5:
+                x = np.array(result['X'])
+                indices = np.where(x == 1)
+                start_time = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S").replace(hour=0, minute=0, second=0, microsecond=0)
 
-            x = np.array(result['X'])
-            indices = np.where(x == 1)
-            start_time = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S").replace(hour=0, minute=0, second=0, microsecond=0)
+                time_mapping = [timedelta(hours=8), timedelta(hours=10), timedelta(hours=14), timedelta(hours=16), timedelta(hours=19)]
 
-            time_mapping = [timedelta(hours=8), timedelta(hours=10), timedelta(hours=14), timedelta(hours=16), timedelta(hours=19)]
-            start_time = start_time + timedelta(days=int(indices[1][0])) + time_mapping[int(indices[0][0])]
-            end_time = start_time + timedelta(hours=2)
+                print(indices)
+                start_time = start_time + timedelta(days=int(indices[0][0])) + time_mapping[int(indices[1][0])]
+                print(start_time)
+                end_time = start_time + timedelta(hours=2)
+                print(end_time)
+                y = np.array(result['Y'])
+                indices = np.where(y == 1)
+                classroom_id = classroom[int(indices[0][0])]
 
-            y = np.array(result['Y'])
-            indices = np.where(y == 1)
-            classroom_id = classroom[int(indices[0][0])]
+                res = student_id * np.sum(student_schedule_matrix * x.reshape(-1, 5), axis=(1, 2))
+                c_student_id =  res[res != 0]
 
-            res = student_id * np.sum(student_schedule_matrix * x.reshape(-1, 5), axis=(1, 2))
-            c_student_id =  res[res != 0]
-
-            classScheduler:ClassSchedule = ClassScheduleCrud.create(db, 
-                                     start_time=start_time,
-                                     end_time=end_time,
-                                     classroom=classroom_id,
-                                     class_id=course_id)
-            
-            TeacherScheduleCrud.create(db, user_id, classScheduler.id, result['w'], result['pref'], c_student_id.tolist())
-            
-            schedule_data = {
-                "perf": result['pref'],
-                "w": result['w'],
-                "schedule": {
-                    "start_time": start_time,
-                    "end_time": end_time,
-                    "classroom_id": classroom_id
-                },
-                "conflict_students": []
-            }
+                classScheduler:ClassSchedule = ClassScheduleCrud.create(db, 
+                                        start_time=start_time,
+                                        end_time=end_time,
+                                        classroom=classroom_id,
+                                        class_id=course_id)
+                
+                TeacherScheduleCrud.create(db, user_id, classScheduler.id, result['w'], result['pref'], c_student_id.tolist())
+                
+                schedule_data = {
+                    "perf": result['pref'],
+                    "w": result['w'],
+                    "schedule": {
+                        "start_time": start_time,
+                        "end_time": end_time,
+                        "classroom_id": classroom_id
+                    },
+                    "conflict_students": []
+                }
+                
+                return {
+                        "status": 0,
+                        "message": "OK",
+                        "data": schedule_data
+                    }
+            else: 
+                return JSONResponse(status_code=500, content={"status": 1, "message": f"Error: 学生冲突率{result['w'] * 100}%过高, 排课失败"})
 
         else:
             return JSONResponse(status_code=500, content={"status": 1, "message": f"Error: 教室冲突，排课失败"})
@@ -85,8 +104,4 @@ async def _(body: ScheduleSchema, token_payload: dict = Depends(validate_teacher
         traceback.print_exc()
         return JSONResponse(status_code=500, content={"status": 1, "message": f"Error: {e}"})
 
-    return {
-        "status": 0,
-        "message": "OK",
-        "data": schedule_data
-    }
+

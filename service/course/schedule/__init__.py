@@ -3,9 +3,13 @@ from .classroom_list import classroom_list_router
 from .class_list import class_list_router
 from .schedule_list import schedule_list_router
 from .schedule import schedules_router
+from .teacher_schedule_delete import teacher_schedule_delete_router
+from .teacher_schedule_list import teacher_schedule_list_router
 
 schedule_router = APIRouter()
 schedule_router.include_router(class_list_router)
 schedule_router.include_router(classroom_list_router)
 schedule_router.include_router(schedule_list_router)
 schedule_router.include_router(schedules_router)
+schedule_router.include_router(teacher_schedule_delete_router)
+schedule_router.include_router(teacher_schedule_list_router)

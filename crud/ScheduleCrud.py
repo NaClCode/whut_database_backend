@@ -27,7 +27,7 @@ class ScheduleCrud:
             19: 4,  # 19:00-21:00
         }
 
-        num_days = len(date_range)
+        num_days = len(date_range) - 1
         num_students = len(student_ids)
         schedule_matrix = np.zeros((num_students, num_days, 5), dtype=int)
 
@@ -72,7 +72,7 @@ class ScheduleCrud:
         }
 
         num_classrooms = len(classroom_ids)
-        num_days = len(date_range)
+        num_days = len(date_range) - 1
         
         schedule_matrix = np.zeros((num_classrooms, num_days, 5), dtype=int)
 

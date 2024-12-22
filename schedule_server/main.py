@@ -72,10 +72,6 @@ class ScheduleOptimizationService(opt_pb2_grpc.ScheduleOptimizationServicer):
 
         objective_w_i_value = (x_result * w_i).sum() / I
 
-        # 准备返回结果
-        x_result = np.array([[pulp.value(x[i, j]) for j in range(N)] for i in range(M)])
-        y_result = np.array([pulp.value(y[j]) for j in range(J)])
-
         return opt_pb2.OptimizationResponse(
             obj_value=pulp.value(problem.objective),
             obj_pref=objective_pref_value,
