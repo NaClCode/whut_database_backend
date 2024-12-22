@@ -1,8 +1,9 @@
 from fastapi import APIRouter
 from .grade_student import grade_student_router
 from .grade_teacher import grade_teacher_router
-
+from .grade_teacher_update import grade_teacher_update_router
 grade_router = APIRouter()
 
 grade_router.include_router(grade_teacher_router)
 grade_router.include_router(grade_student_router)
+grade_router.include_router(grade_teacher_update_router)

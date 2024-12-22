@@ -6,7 +6,7 @@ from model.SCModel import StudentCourse
 from model.ClassModel import Class
 from model.ClassScheduleModel import ClassSchedule
 from model.ClassPlanModel import ClassPlan
-from sqlalchemy.sql import func
+from model.StudentModel import Student
 
 class StudentCourseCrud:
     @staticmethod
@@ -187,3 +187,38 @@ class StudentCourseCrud:
             "total_records": total_records,
             "total_pages": total_pages
         }
+    
+    @staticmethod
+    def get_students_and_grades(db:Session, class_id: int):
+        results = (
+            db.query(Student.id, Student.name, StudentCourse.grade)
+            .join(StudentCourse, Student.id == StudentCourse.student_id)
+            .filter(StudentCourse.class_id == class_id)
+            .all()
+        )
+        return results
+    
+    @staticmethod
+    def upload_student_grades(db: Session, class_id: int, student_ids: list, grades: list):
+        if len(student_ids) != len(grades):
+            raise ValueError("student len != grade len")
+        
+        for student_id, grade in zip(student_ids, grades):
+            record = (
+                db.query(StudentCourse)
+                .filter(StudentCourse.student_id == student_id, StudentCourse.class_id == class_id)
+                .first()
+            )
+            
+            if record:
+                record.grade = grade
+            else:
+                new_record = StudentCourse(
+                    student_id=student_id,
+                    class_id=class_id,
+                    grade=grade,
+                    enrolled_date=datetime.now() 
+                )
+                db.refresh(new_record)
+        
+        db.commit()

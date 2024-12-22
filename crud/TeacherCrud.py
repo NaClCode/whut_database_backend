@@ -97,18 +97,15 @@ class TeacherCrud(AbstractCrud[Teacher]):
     @staticmethod
     def get_teacher_courses(db:Session, teacher_id:int):
         results = (
-            db.query(Class.id.label("class_id"), ClassPlan.name.label("name"), Class.num.label("num"))
+            db.query(ClassPlan, Class)
             .join(ClassPlan, Class.class_plan_id == ClassPlan.id)
             .filter(Class.teacher_id == teacher_id)
             .all()
         )
         return [{
-            "class_id": _.class_id,
-            "name": _.name,
-            "num": _.num
-        } for _ in results]
-
-
-
-
-    
+            "class_id": classer.id,
+            "name": plan.name,
+            "num": classer.num,
+            "type": plan.type,
+            "credit": plan.credit
+        } for plan, classer in results]
