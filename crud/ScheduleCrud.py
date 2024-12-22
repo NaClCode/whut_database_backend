@@ -55,7 +55,7 @@ class ScheduleCrud:
                 if start_hour == start_time.hour:
                     schedule_matrix[student_idx, day_idx, timeslot] = 1
             
-        return schedule_matrix.tolist()
+        return schedule_matrix, student_ids
     
     @staticmethod
     def get_classroom_schedule_matrix(db: Session, classroom_ids: list, start_date: str, end_date: str):
@@ -98,5 +98,5 @@ class ScheduleCrud:
                 if start_hour == start_time.hour:
                     schedule_matrix[classroom_idx, day_idx, timeslot] = 1
 
-        return schedule_matrix.tolist()
+        return schedule_matrix
 

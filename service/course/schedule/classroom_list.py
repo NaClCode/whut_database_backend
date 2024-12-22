@@ -24,6 +24,7 @@ async def _(body: ClassroomListScheduleSchema = Depends(), token_payload: dict =
         "status": 0,
         "message": "OK",
         "data": [{
+            "classroom_id": _.id,
             "name": _.name,
             "location": _.location,
             "capacity": _.capacity

@@ -102,7 +102,11 @@ class TeacherCrud(AbstractCrud[Teacher]):
             .filter(Class.teacher_id == teacher_id)
             .all()
         )
-        return results
+        return [{
+            "class_id": _.class_id,
+            "name": _.name,
+            "num": _.num
+        } for _ in results]
 
 
 

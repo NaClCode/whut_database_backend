@@ -3,7 +3,7 @@ import traceback
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
-from crud.ClassScheduleCrud import ClassScheduleCrud
+from crud.TeacherScheduleCrud import TeacherScheduleCrud
 from schema.course.schedule.ScheduleListSchema import ScheduleListSchema
 from utils.auth_token import validate_teacher_token
 from utils.get_db import get_db
@@ -16,7 +16,8 @@ async def _(body: ScheduleListSchema = Depends(), token_payload: dict = Depends(
     id = body.class_id
 
     try:
-        class_schedule = ClassScheduleCrud.get_by_class(db, id)
+        data = TeacherScheduleCrud.get_class_schedules(db, id)
+        pass
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(status_code=500, content={"status": 1, "message": f"Database Error: {e}"})
@@ -24,5 +25,5 @@ async def _(body: ScheduleListSchema = Depends(), token_payload: dict = Depends(
     return {
         "status": 0,
         "message": "OK",
-        "data": class_schedule
+        "data": data
     }

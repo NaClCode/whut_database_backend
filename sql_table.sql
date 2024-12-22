@@ -92,9 +92,12 @@ CREATE TABLE admin (
 );
 
 CREATE TABLE teacher_schedule (
-    id INTEGER PRIMARY KEY AUTO_INCREMENT,     -- Primary key for TeacherSchedule
-    teacher_id INTEGER NOT NULL,               -- Foreign key referencing teacher(id)
-    class_schedule_id INTEGER NOT NULL,        -- Foreign key referencing class_schedule(id)
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,      -- Primary key for TeacherSchedule
+    teacher_id INTEGER NOT NULL,                -- Foreign key referencing teacher(id)
+    class_schedule_id INTEGER NOT NULL,         -- Foreign key referencing class_schedule(id)
+    conflict_rate FLOAT NOT NULL DEFAULT 0,     -- 冲突率
+    preference_satisfaction FLOAT NOT NULL DEFAULT 0, -- 偏好满意度
+    conflict_student_ids TEXT,                  -- 冲突的学生 ID 列表，JSON 格式存储
     FOREIGN KEY (teacher_id) REFERENCES teacher(id), 
     FOREIGN KEY (class_schedule_id) REFERENCES class_schedule(id)
 );
