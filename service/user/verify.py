@@ -37,9 +37,9 @@ async def _(token: str, db: Session = Depends(get_db)):
     try:
         user.verify = True
         if usertype == 'teacher':
-            TeacherCrud.update(db, user)
+            TeacherCrud.update(db, user.id, user)
         elif usertype == 'student':
-            StudentCrud.update(db, user)
+            StudentCrud.update(db, user.id, user)
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(status_code=500, content={"status": 1, "message": f"DataBase Error: {e}"})
