@@ -12,9 +12,9 @@ def run_opt_client(server_address, day_num, student_num, classroom_num, schedule
     if classroom_w is None:
         classroom_w = np.zeros((classroom_num, day_num, 5)).astype(int).flatten().tolist()
     if day_w is None:
-        day_w = day_w
+        day_w = np.zeros(day_num)
     if day_5 is None:
-        day_5 = day_5
+        day_5 = np.zeros(5)
 
     request = opt_pb2.OptimizationRequest(
         day_num=day_num,
