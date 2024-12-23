@@ -37,15 +37,20 @@ services:
       --lower_case_table_names=1
     networks:
       - servernet
+  schedule:
+    build: ./schedule_server
+    ports:
+      - "50051:50051"
+    networks:
+      - servernet
   web:
     # 指定容器名称
     build: ./
     ports:
       - "8000:8000"
-    volumes:
-      - ./WorkDir:/home/WorkDir
     depends_on:
       - mysql
+      - schedule
     networks:
       - servernet
 

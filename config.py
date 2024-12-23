@@ -27,7 +27,9 @@ class Config(BaseSettings):
     email_smtp_user: str = ""
     email_smtp_password: str = ""
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+    #model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+
+    model_config = SettingsConfigDict(env_file="docker.env", env_file_encoding="utf-8")
 
     select_start_time: datetime = datetime(1970, 1, 1, 0, 0, 0)
     select_end_time: datetime = datetime(2099, 12, 31, 23, 59, 59)
