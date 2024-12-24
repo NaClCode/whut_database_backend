@@ -42,4 +42,22 @@ class StudentCrud(AbstractCrud[Student]):
         根据邮箱获取学生记录
         """
         return db.query(Student).filter(Student.email == email).first()
+
+    @staticmethod
+    def update(db: Session, obj_id: int, update_data):
+        """
+        更新记录
+        """
+
+        obj = db.query(Student).filter(Student.id == obj_id).first()
+        if obj:
+
+            for key, value in update_data.__dict__.items():
+                if hasattr(obj, key):
+                    setattr(obj, key, value)
+            db.commit()
+            db.refresh(obj)
+            return obj
+        else:
+            raise ValueError(f"No object found with id {obj_id}")
     

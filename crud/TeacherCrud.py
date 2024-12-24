@@ -109,3 +109,21 @@ class TeacherCrud(AbstractCrud[Teacher]):
             "type": plan.type,
             "credit": plan.credit
         } for plan, classer in results]
+    
+    @staticmethod
+    def update(db: Session, obj_id: int, update_data):
+        """
+        更新记录
+        """
+
+        obj = db.query(Teacher).filter(Teacher.id == obj_id).first()
+        if obj:
+
+            for key, value in update_data.__dict__.items():
+                if hasattr(obj, key):
+                    setattr(obj, key, value)
+            db.commit()
+            db.refresh(obj)
+            return obj
+        else:
+            raise ValueError(f"No object found with id {obj_id}")
