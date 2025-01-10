@@ -55,7 +55,7 @@ async def _(body: StudentUpdateInfoSchema, token_payload: dict = Depends(validat
         if idcard != "": user.idcard = idcard
         if college != "": user.college = college
         
-        StudentCrud.update(db, Student, user)
+        StudentCrud.update(db, user.id, user)
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(status_code=500, content={"status": 1, "message": f"Database Error: {e}"})
