@@ -27,3 +27,7 @@
 ```shell
 docker-compose up -d
 ```
+
+## 文档
+1. 题目参考[题目](./doc/题目.docx)
+2. 文档参考[文档](./doc/软件开发技术实训实验报告.pdf)
